@@ -1,0 +1,53 @@
+import numpy as np
+# Multiply each element and add 1
+#c = a * b + 1
+
+
+
+
+
+# lecture 4
+import numpy as np
+a = np.arange(4)
+b = a + 1
+#c = a + b
+#print( "a = {}".format(a) )
+#print( "b = {}".format(b) )
+#print( "c = {}".format(c) )
+
+
+b = np.linspace(1, 2.5, 4)
+c = a * b
+
+#print( "a = {}".format(a))
+#print( "b = {}".format(b))
+#print( "c = {}".format(c))
+
+#print( type(a[0]), type(b[0]), type(c[0]) )
+
+a = np.linspace(1., 10., 7)
+index = np.array([0, 2, 3])
+
+#print( "a = {}".format(a) ) # print the array
+#print( "index = {}".format(index) ) # print the index-array
+#print()
+#print( a[0] )          # print element on index 0
+#print( a[ [0, 2, 3] ] )# Indexing with index array - Python list
+#print( a[index] )      # Indexing with index array - NumPy array
+
+#mask = a > 4
+#print( mask )
+#print( a[mask] )
+
+a = np.linspace( 1., 2.5, 4 )
+b = np.linspace( 2., 4., 5 )
+print( "a = \n{}".format(a) )
+print( "b = \n{}".format(b) )
+c = a[ :, np.newaxis ] * b[ np.newaxis, : ]
+print( "c = \n{}".format(c) )
+
+
+print("a:  ")
+print(a[ :, np.newaxis ])
+print("b:  ")
+print (a[ :, np.newaxis ] * np.ones(5))
