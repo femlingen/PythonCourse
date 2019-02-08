@@ -8,10 +8,6 @@ import time
 from scipy.spatial import cKDTree
 
 
-##TESTCOMMIT
-##TESTCOMMIT
-##TESTCOMMIT
-
 """ This is an assignment in course Object Oriented Programming in Python - DAT171 """
 __author__ = "Lucas Jutvik & Frida Femling"
 
