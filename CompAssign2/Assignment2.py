@@ -22,7 +22,6 @@ specifications of what is required of your library.
 # --- Variable declaration ---
 
 
-
 class PlayingCard:
     def __init__(self, suit):
         self.suit = suit
@@ -115,7 +114,7 @@ class StandardDeck:
             self.deck_list.append(QueenCard(suit))
             self.deck_list.append(KingCard(suit))
 
-    def shuffle_cards(self):
+    def shuffle_cards(self): # shuffled from random library
         shuffle(self.deck_list)
 
     def reveal_cards(self):
@@ -135,19 +134,34 @@ class StandardDeck:
         return len(self.deck_list)
 
 
+"""
+The  Hand  must have methods for adding a new card, dropping several cards (based on an index list), 
+and sorting the cards. There must also be a method  best_poker_hand( self , cards=[])  
+which computes the best hand out of the cards in the hand and cards in the input argument. 
+The  best_poker_hand  method returns a  PokerHand . """
+
+
 class Hand:
     def __init__(self, name='Player_Name'):
         self.player_name = name
         self.cards = []
 
     def take_card(self, deck):
-        self.hand.append(deck.deal_card())
+        self.cards.append(deck.deal_card())
 
     def drop_cards(self, deck, index=[0]):
         sorted(index)
-        for indice in reversed(index):
-            deck.add_trash_card(self.hand.pop(indice))
+        for i1 in reversed(index):
+            deck.add_trash_card(self.cards.pop(i1))
+
+    def reveal_cards(self):
+        for card in self.cards:
+            print(card)
 
 
+deck = StandardDeck()
+deck.shuffle_cards()
+hand = Hand("Frida")
 
-
+hand.take_card(deck)
+hand.reveal_cards()
