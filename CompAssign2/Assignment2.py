@@ -1,4 +1,5 @@
-
+from enum import Enum
+from random import shuffle
 """ This is an assignment in course Object Oriented Programming in Python - DAT171 """
 __author__ = "Lucas Jutvik & Frida Femling"
 
@@ -14,25 +15,9 @@ specifications of what is required of your library.
 # --- Variable declaration ---
 
 
-from enum import Enum
-from random import shuffle
-
-
 class PlayingCard:
     def __init__(self, suit):
         self.suit = suit
-
-    def __lt__(self, other):
-        if self.value < other:
-            return True
-        else:
-            return False
-
-    def __eq__(self, other):
-        if self.value == other:
-            return True
-        else:
-            return False
 
 
 class Suit(Enum):
@@ -155,5 +140,10 @@ class Hand:
             deck.add_trash_card(self.hand.pop(indice))
 
 
+deck = StandardDeck()
+deck.shuffle_cards()
+deck.reveal_cards()
 
 
+class nyklass:
+    pass
