@@ -1,13 +1,13 @@
 from enum import Enum
 from random import shuffle
-from collections import Counter # Counter is convenient for counting objects (a specialized dictionary)
+from collections import Counter  # Counter is convenient for counting objects (a specialized dictionary)
 
 
 # TODO: ask Thomas about get_value must be overloaded
 # TODO: create from your written docstrings
 # TODO: write tests
 # TODO: Optional step: Create a class to represent a Player for a Texas Hold’em poker game
-#
+# TODO: Ask about get_value static, do they have to be methods?
 
 """ This is an assignment in course Object Oriented Programming in Python - DAT171 """
 __author__ = "Lucas Jutvik & Frida Femling"
@@ -25,11 +25,13 @@ specifications of what is required of your library.
 
 
 class PlayingCard:
+    """A general class for all cards made"""
     def __init__(self, suit):
         self.suit = suit
 
 
 class Suit(Enum):
+    """A class for avoiding mistakes while using suits"""
     clubs = 0
     spades = 1
     diamonds = 2
@@ -43,8 +45,9 @@ class Suit(Enum):
 
 
 class NumberedCard(PlayingCard):
+    """A class for making card objects between and including value 2 and 10"""
     def __init__(self, value, suit):
-        super().__init__(suit) # goes down to PlayingCard-class to fetch PlayingCard
+        super().__init__(suit)  # goes down to PlayingCard-class to fetch PlayingCard
         self.value = value
 
     def get_value(self):
@@ -58,6 +61,7 @@ class NumberedCard(PlayingCard):
 
 
 class AceCard(PlayingCard):
+    """A class for makin Ace cards"""
     def get_value(self):
         return 1
 
@@ -69,6 +73,7 @@ class AceCard(PlayingCard):
 
 
 class JackCard(PlayingCard):
+    """A class for making Jack cards"""
     def get_value(self):
         return 11
 
@@ -80,6 +85,7 @@ class JackCard(PlayingCard):
 
 
 class QueenCard(PlayingCard):
+    """A class for making Queen cards"""
     def get_value(self):
         return 12
 
@@ -91,6 +97,7 @@ class QueenCard(PlayingCard):
 
 
 class KingCard(PlayingCard):
+    """A class for making King cards"""
     def get_value(self):
         return 13
 
@@ -109,6 +116,7 @@ The  best_poker_hand  method returns a  PokerHand . """
 
 
 class Hand:
+    """A class for creating a hand (player) object that can draw cards from a deck to it"""
     def __init__(self, name='Player_Name'):
         self.player_name = name
         self.cards = []
@@ -116,7 +124,9 @@ class Hand:
     def take_card(self, deck):
         self.cards.append(deck.deal_card())
 
-    def drop_cards(self, deck, index=[0]):
+    def drop_cards(self, deck, index=None):
+        if index == None:
+            index = [0]
         sorted(index)
         for i1 in reversed(index):
             deck.add_trash_card(self.cards.pop(i1))
@@ -131,7 +141,7 @@ There should be functions for shuffling and taking the top card (which removes t
 
 
 class StandardDeck:
-
+    """A class for creating and altering decks"""
     def __init__(self):
         self.trash_pile = []
         self.deck_list = []
@@ -145,7 +155,7 @@ class StandardDeck:
             self.deck_list.append(QueenCard(suit))
             self.deck_list.append(KingCard(suit))
 
-    def shuffle_cards(self): # shuffled from random library
+    def shuffle_cards(self):  # shuffled from random library
         shuffle(self.deck_list)
 
     def reveal_cards(self):
@@ -165,7 +175,6 @@ class StandardDeck:
         return len(self.deck_list)
 
 
-
 """ The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
 (high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush) 
 and the highest value(s) (and perhaps suits). The  PokerHand should overload the < operator in order to compare 
@@ -174,14 +183,15 @@ which  PokerHand  is valued highest based on the type, value(s) (and possible su
 
 # TODO: Är det meningen att vi ska inherita från Hand? Hur ser konstruktorn ut?
 
+
 class PokerHand(Hand):
-    def __init__(self):
-        self.hand = self
+    def __init__(self, poker_hand):
+        self.cards = poker_hand
 
     def check_hand(self):
-        # gå igenom alla funktioner och beräkna värde
+        # Go through all functions and calculate values
         pass
-        #check_high_card(cards)
+        #  check_high_card(cards)
 
 
 def check_high_card(cards):
@@ -208,7 +218,7 @@ def check_flush(cards):
     pass
 
 
-def check_foak(cards): # four of a kind
+def check_foak(cards):  # four of a kind
     pass
 
 
@@ -221,7 +231,7 @@ def check_straight_flush(cards):
     """
     vals = [(c.give_value(), c.suit) for c in cards] \
         + [(1, c.suit) for c in cards if c.give_value() == 14]  # Add the aces!
-    for c in reversed(cards): # Starting point (high card)
+    for c in reversed(cards):  # Starting point (high card)
         # Check if we have the value - k in the set of cards:
         found_straight = True
         for k in range(1, 5):
@@ -254,5 +264,3 @@ def check_full_house(cards):
         for two in reversed(twos):
             if two != three:
                 return three, two
-
-
