@@ -27,18 +27,6 @@ class PlayingCard:
     def __init__(self, suit):
         self.suit = suit
 
-    def __lt__(self, other):
-        if self.value < other:
-            return True
-        else:
-            return False
-
-    def __eq__(self, other):
-        if self.value == other:
-            return True
-        else:
-            return False
-
 
 class Suit(Enum):
     clubs = 0
@@ -55,27 +43,28 @@ class Suit(Enum):
 
 class NumberedCard(PlayingCard):
     def __init__(self, value, suit):
-        super().__init__(suit)
+        super().__init__(suit) # goes down to PlayingCard-class to fetch PlayingCard
         self.value = value
 
     def get_value(self):
         return self.value
 
+    def __str__(self):
+        return '{} of {}'.format(self.value, self.suit)
+
     def __repr__(self):
         return '{} of {}'.format(self.value, self.suit)
 
-    def __str__(self):
-        return '{} of {}'.format(self.value, self.suit)
 
 
 class AceCard(PlayingCard):
     def get_value(self):
         return 1
 
-    def __repr__(self):
+    def __str__(self):
         return 'Ace of {}'.format(self.suit)
 
-    def __str__(self):
+    def __repr__(self):
         return 'Ace of {}'.format(self.suit)
 
 
@@ -83,10 +72,10 @@ class JackCard(PlayingCard):
     def get_value(self):
         return 11
 
-    def __repr__(self):
+    def __str__(self):
         return 'Jack of {}'.format(self.suit)
 
-    def __str__(self):
+    def __repr__(self):
         return 'Jack of {}'.format(self.suit)
 
 
@@ -94,10 +83,10 @@ class QueenCard(PlayingCard):
     def get_value(self):
         return 12
 
-    def __repr__(self):
+    def __str__(self):
         return 'Queen of {}'.format(self.suit)
 
-    def __str__(self):
+    def __repr__(self):
         return 'Queen of {}'.format(self.suit)
 
 
@@ -105,10 +94,10 @@ class KingCard(PlayingCard):
     def get_value(self):
         return 13
 
-    def __repr__(self):
+    def __str__(self):
         return 'King of {}'.format(self.suit)
 
-    def __str__(self):
+    def __repr__(self):
         return 'King of {}'.format(self.suit)
 
 
