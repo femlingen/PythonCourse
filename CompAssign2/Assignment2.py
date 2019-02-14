@@ -25,13 +25,17 @@ specifications of what is required of your library.
 
 
 class PlayingCard:
-    """A general class for all cards made"""
+    """
+    A general class for all cards made
+    """
     def __init__(self, suit):
         self.suit = suit
 
 
 class Suit(Enum):
-    """A class for avoiding mistakes while using suits"""
+    """
+    A class for avoiding mistakes while using suits
+    """
     clubs = 0
     spades = 1
     diamonds = 2
@@ -45,7 +49,9 @@ class Suit(Enum):
 
 
 class NumberedCard(PlayingCard):
-    """A class for making card objects between and including value 2 and 10"""
+    """
+    A class for making card objects between and including value 2 and 10
+    """
     def __init__(self, value, suit):
         super().__init__(suit)  # goes down to PlayingCard-class to fetch PlayingCard
         self.value = value
@@ -61,7 +67,10 @@ class NumberedCard(PlayingCard):
 
 
 class AceCard(PlayingCard):
-    """A class for makin Ace cards"""
+    """
+    A class for making Ace cards
+    """
+
     def get_value(self):
         return 1
 
@@ -73,7 +82,10 @@ class AceCard(PlayingCard):
 
 
 class JackCard(PlayingCard):
-    """A class for making Jack cards"""
+    """
+    A class for making Jack cards
+    """
+
     def get_value(self):
         return 11
 
@@ -85,7 +97,9 @@ class JackCard(PlayingCard):
 
 
 class QueenCard(PlayingCard):
-    """A class for making Queen cards"""
+    """
+    A class for making Queen cards
+    """
     def get_value(self):
         return 12
 
@@ -97,7 +111,9 @@ class QueenCard(PlayingCard):
 
 
 class KingCard(PlayingCard):
-    """A class for making King cards"""
+    """
+    A class for making King cards
+    """
     def get_value(self):
         return 13
 
@@ -116,7 +132,11 @@ The  best_poker_hand  method returns a  PokerHand . """
 
 
 class Hand:
-    """A class for creating a hand (player) object that can draw cards from a deck to it"""
+    """
+    A class for creating a hand (player) object that can draw cards from a deck to it
+    :return: Returns a list of standard deck of cards
+    """
+
     def __init__(self, name='Player_Name'):
         self.player_name = name
         self.cards = []
@@ -141,7 +161,11 @@ There should be functions for shuffling and taking the top card (which removes t
 
 
 class StandardDeck:
-    """A class for creating and altering decks"""
+    """
+    A class for creating and altering decks
+    :return: Returns a list of standard deck of cards
+    """
+
     def __init__(self):
         self.trash_pile = []
         self.deck_list = []
