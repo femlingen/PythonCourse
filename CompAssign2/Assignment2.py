@@ -71,7 +71,8 @@ class AceCard(PlayingCard):
     A class for making Ace cards
     """
 
-    def get_value(self):
+    @staticmethod
+    def get_value():
         return 1
 
     def __str__(self):
@@ -86,7 +87,8 @@ class JackCard(PlayingCard):
     A class for making Jack cards
     """
 
-    def get_value(self):
+    @staticmethod
+    def get_value():
         return 11
 
     def __str__(self):
@@ -100,7 +102,8 @@ class QueenCard(PlayingCard):
     """
     A class for making Queen cards
     """
-    def get_value(self):
+    @staticmethod
+    def get_value():
         return 12
 
     def __str__(self):
@@ -114,7 +117,8 @@ class KingCard(PlayingCard):
     """
     A class for making King cards
     """
-    def get_value(self):
+    @staticmethod
+    def get_value():
         return 13
 
     def __str__(self):
