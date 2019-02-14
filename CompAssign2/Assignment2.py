@@ -31,6 +31,15 @@ class PlayingCard:
     def __init__(self, suit):
         self.suit = suit
 
+    def __lt__(self, other):
+        return self.get_value() < other.get_value()
+
+    def __eq__(self, other):
+        return self.get_value() == other.get_value()
+
+    def __gt__(self, other):
+        return self.get_value() > other.get_value()
+
 
 class Suit(Enum):
     """
@@ -70,7 +79,7 @@ class AceCard(PlayingCard):
 
     @staticmethod
     def get_value():
-        return 1
+        return 14
 
     def __str__(self):
         return 'Ace of {}'.format(self.suit)
@@ -156,6 +165,9 @@ class Hand:
         for card in self.cards:
             print(card)
 
+    def sort_hand(self):
+        self.cards.sort()
+
 
 """ Task 3 - The deck:  A  StandardDeck ()  must create a full deck of (52) cards. 
 There should be functions for shuffling and taking the top card (which removes the card from the deck). """
@@ -206,95 +218,93 @@ and the highest value(s) (and perhaps suits). The  PokerHand should overload the
 which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
 # TODO: Want to add these in a separate file
 
-# TODO: Är det meningen att vi ska inherita från Hand? Hur ser konstruktorn ut?
-
 
 class PokerHand:
     def __init__(self, poker_hand):
         self.cards = poker_hand
-        self.hand_value = PokerHand.check_hand()
+        self.best_hand = None
+        self.check_hand()
 
     def check_hand(self):
         # Go through all functions and calculate values
-        
-        return 0
+        self.check_high_card()
         #  check_high_card(cards)
 
+    def check_high_card(self):
+        max_card = self.cards[0]
+        for card in self.cards:
+            if max_card < card:
+                max_card = card
+        self.best_hand = max_card.get_value
 
-def check_high_card(cards):
-    max_value = 0
-    for card in cards:
-        current_value = card.get_value
-        if max_value < current_value:
-            max_value = current_value
-    return max_value
-
-def check_pair(cards):
-    pass
+    def check_pair(cards):
+        pass
 
 
-def check_two_pair(cards):
-    pass
+    def check_two_pair(cards):
+        pass
 
 
-def check_toak(cards): #three of a kind
-    pass
+    def check_toak(cards): #three of a kind
+        pass
 
 
-def check_straight(cards):
-    pass
+    def check_straight(cards):
+        pass
 
 
-def check_flush(cards):
-    pass
+    def check_flush(cards):
+        pass
 
 
-def check_foak(cards):  # four of a kind
-    pass
+    def check_foak(cards):  # four of a kind
+        pass
 
 
-def check_straight_flush(cards):
-    """
-    Checks for the best straight flush in a list of cards (may be more than just 5)
+    def check_straight_flush(cards):
+        """
+        Checks for the best straight flush in a list of cards (may be more than just 5)
 
-    :param cards: A list of playing cards.
-    :return: None if no straight flush is found, else the value of the top card.
-    """
-    vals = [(c.give_value(), c.suit) for c in cards] \
-        + [(1, c.suit) for c in cards if c.give_value() == 14]  # Add the aces!
-    for c in reversed(cards):  # Starting point (high card)
-        # Check if we have the value - k in the set of cards:
-        found_straight = True
-        for k in range(1, 5):
-            if (c.give_value() - k, c.suit) not in vals:
-                found_straight = False
-                break
-        if found_straight:
-            return c.give_value()
+        :param cards: A list of playing cards.
+        :return: None if no straight flush is found, else the value of the top card.
+        """
+        vals = [(c.give_value(), c.suit) for c in cards] \
+            + [(1, c.suit) for c in cards if c.give_value() == 14]  # Add the aces!
+        for c in reversed(cards):  # Starting point (high card)
+            # Check if we have the value - k in the set of cards:
+            found_straight = True
+            for k in range(1, 5):
+                if (c.give_value() - k, c.suit) not in vals:
+                    found_straight = False
+                    break
+            if found_straight:
+                return c.give_value()
 
 
-def check_full_house(cards):
-    """
-    Checks for the best full house in a list of cards (may be more than just 5)
+    def check_full_house(cards):
+        """
+        Checks for the best full house in a list of cards (may be more than just 5)
 
-    :param cards: A list of playing cards
-    :return: None if no full house is found, else a tuple of the values of the triple and pair.
-    """
-    value_count = Counter()
-    for c in cards:
-        value_count[c.give_value()] += 1
-    # Find the card ranks that have at least three of a kind
-    threes = [v[0] for v in value_count.items() if v[1] >= 3]
-    threes.sort()
-    # Find the card ranks that have at least a pair
-    twos = [v[0] for v in value_count.items() if v[1] >= 2]
-    twos.sort()
+        :param cards: A list of playing cards
+        :return: None if no full house is found, else a tuple of the values of the triple and pair.
+        """
+        value_count = Counter()
+        for c in cards:
+            value_count[c.give_value()] += 1
+        # Find the card ranks that have at least three of a kind
+        threes = [v[0] for v in value_count.items() if v[1] >= 3]
+        threes.sort()
+        # Find the card ranks that have at least a pair
+        twos = [v[0] for v in value_count.items() if v[1] >= 2]
+        twos.sort()
 
-    # Threes are dominant in full house, lets check that value first:
-    for three in reversed(threes):
-        for two in reversed(twos):
-            if two != three:
-                return three, two
+        # Threes are dominant in full house, lets check that value first:
+        for three in reversed(threes):
+            for two in reversed(twos):
+                if two != three:
+                    return three, two
+
+
 
 
 my_deck = StandardDeck()
@@ -302,6 +312,10 @@ my_deck.shuffle_cards()
 my_hand = Hand()
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
 
-print(my_hand.reveal_cards())
-print(check_high_card(my_hand))
+
+my_hand.sort_hand()
+my_hand.reveal_cards()
