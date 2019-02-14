@@ -149,7 +149,7 @@ class Hand:
         self.cards.append(deck.deal_card())
 
     def drop_cards(self, deck, index=None):
-        if index == None:
+        if index is None:
             index = [0]
         sorted(index)
         for i1 in reversed(index):
