@@ -223,7 +223,7 @@ class PokerHand(Hand):
 
 
 def check_high_card(cards):
-    pass
+    return max(cards.get_value)
 
 
 def check_pair(cards):
@@ -292,3 +292,13 @@ def check_full_house(cards):
         for two in reversed(twos):
             if two != three:
                 return three, two
+
+
+my_deck = StandardDeck()
+my_deck.shuffle_cards()
+my_hand = Hand()
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+
+print(my_hand.reveal_cards())
+print(check_high_card(my_hand))
