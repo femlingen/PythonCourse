@@ -41,11 +41,8 @@ class Suit(Enum):
     diamonds = 2
     hearts = 3
 
-    def __str__(self):
-        return ['Clubs', 'Spades', 'Diamonds', 'Hearts'][self.value]
-
     def __repr__(self):
-        return ['Clubs', 'Spades', 'Diamonds', 'Hearts'][self.value]
+        return self.name.capitalize()
 
 
 class NumberedCard(PlayingCard):
@@ -212,19 +209,25 @@ which  PokerHand  is valued highest based on the type, value(s) (and possible su
 # TODO: Är det meningen att vi ska inherita från Hand? Hur ser konstruktorn ut?
 
 
-class PokerHand(Hand):
+class PokerHand:
     def __init__(self, poker_hand):
         self.cards = poker_hand
+        self.hand_value = PokerHand.check_hand()
 
     def check_hand(self):
         # Go through all functions and calculate values
-        pass
+        
+        return 0
         #  check_high_card(cards)
 
 
 def check_high_card(cards):
-    return max(cards.get_value)
-
+    max_value = 0
+    for card in cards:
+        current_value = card.get_value
+        if max_value < current_value:
+            max_value = current_value
+    return max_value
 
 def check_pair(cards):
     pass
