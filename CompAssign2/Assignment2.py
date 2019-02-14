@@ -53,6 +53,9 @@ class Suit(Enum):
     def __repr__(self):
         return self.name.capitalize()
 
+    def __str__(self):
+        return self.name.capitalize()
+
 
 class NumberedCard(PlayingCard):
     """
@@ -184,7 +187,7 @@ class StandardDeck:
         self.deck_list = []
         suit_list = [Suit.spades, Suit.diamonds, Suit.clubs, Suit.hearts]
 
-        for suit in suit_list:
+        for suit in Suit:
             self.deck_list.append(AceCard(suit))
             for counter in range(2, 11):
                 self.deck_list.append(NumberedCard(counter, suit))
@@ -218,46 +221,65 @@ and the highest value(s) (and perhaps suits). The  PokerHand should overload the
 which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
 # TODO: Want to add these in a separate file
 
+# TODO: Är det meningen att vi ska inherita från Hand? Hur ser konstruktorn ut?
+
 
 class PokerHand:
     def __init__(self, poker_hand):
         self.cards = poker_hand
+        self.cards.sort()
         self.best_hand = None
+        self.hand_type = None
+        self.high_card = None
         self.check_hand()
 
     def check_hand(self):
         # Go through all functions and calculate values
         self.check_high_card()
-        #  check_high_card(cards)
+        self.check_pair()
+        self.check_flush()
+
 
     def check_high_card(self):
         max_card = self.cards[0]
         for card in self.cards:
             if max_card < card:
                 max_card = card
-        self.best_hand = max_card.get_value
+        self.best_hand = max_card
+        self.high_card = max_card
+        self.hand_type = 'High Card'
 
-    def check_pair(cards):
+    def check_pair(self):
+
+        for card1 in self.cards:
+            for card2 in self.cards:
+                if card1.get_value() == card2.get_value() and card1.suit != card2.suit:
+                    self.best_hand = [card1, card2]
+                    self.hand_type = 'Pair'
+
+    def check_toak(self): #three of a kind
+        for card1 in self.cards:
+            for card2 in self.cards:
+                if card1.get_value() == card2.get_value() and card1.suit != card2.suit:
+                    self.best_hand = [card1, card2]
+                    self.hand_type = 'Pair'
+
+    def check_two_pair(self):
         pass
 
-
-    def check_two_pair(cards):
+    def check_straight(self):
         pass
 
+    def check_flush(self):
+        suits = [card.suit for card in self.cards]
+        if len(set(suits)) == 1:
+            self.best_hand = [] # vad ska denna innehålla?
+            self.hand_type = 'Flush'
+            return True
+        else:
+            return False
 
-    def check_toak(cards): #three of a kind
-        pass
-
-
-    def check_straight(cards):
-        pass
-
-
-    def check_flush(cards):
-        pass
-
-
-    def check_foak(cards):  # four of a kind
+    def check_foak(self):  # four of a kind
         pass
 
 
@@ -319,3 +341,6 @@ my_hand.take_card(my_deck)
 
 my_hand.sort_hand()
 my_hand.reveal_cards()
+
+ph = PokerHand(my_hand.cards)
+print("Best is " + str(ph.best_hand))
