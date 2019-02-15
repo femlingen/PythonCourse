@@ -279,10 +279,14 @@ class PokerHand:
                     check_for_straigh = False
                     break
 
-
-
     def check_flush(self):
-        pass
+        suits = [card.suit for card in self.cards]
+        if len(set(suits)) == 1:
+            self.best_hand = [] # vad ska denna innehålla?
+            self.hand_type = 'Flush'
+            return True
+        else:
+            return False
 
     def check_foak(self):  # four of a kind
         for i1, card in enumerate(self.cards[0:-4]):
