@@ -228,7 +228,7 @@ class PokerHand:
     def __init__(self, poker_hand):
         self.cards = poker_hand
         self.cards.sort()
-        self.best_hand = None
+        self.best_hand = []
         self.high_card = None
         self.hand_type = None
         self.check_hand()
@@ -239,6 +239,7 @@ class PokerHand:
         self.check_pair()
         self.check_toak()
         self.check_foak()
+        self.check_flush()
         # self.check_straight()
         #  check_high_card(cards)
 
@@ -267,7 +268,7 @@ class PokerHand:
                 self.best_hand = self.cards[i1:i1+3]
                 self.hand_type = 'Three of a kind'
 
-    def check_straight(self):
+    def check_straight(self): # TODO: Does this work?
         best_straight = []
         for i1, card in enumerate(self.cards[0:-4]):
             card_value = card.get_value()
@@ -279,21 +280,26 @@ class PokerHand:
                     check_for_straigh = False
                     break
 
-    def check_flush(self):
-        suits = [card.suit for card in self.cards]
-        if len(set(suits)) == 1:
-            self.best_hand = [] # vad ska denna innehålla?
-            self.hand_type = 'Flush'
-            return True
-        else:
-            return False
+    def check_flush(self): # TODO: maybe change this since it might not be the best solution
+        temp_list = []
+        cnt = Counter()
+        for card in self.cards:
+            cnt[card.suit] += 1
+        if cnt.most_common(1)[0][1] > 4:
+            for card1 in reversed(self.cards):
+                if card1.suit == cnt.most_common(1)[0][0]:
+                    temp_list.append(card1)
+                    print("Färg " + str(self.best_hand))
+                    if len(temp_list) == 5:
+                        self.hand_type = 'Flush'
+                        self.best_hand = temp_list
+                        break
 
     def check_foak(self):  # four of a kind
         for i1, card in enumerate(self.cards[0:-4]):
             if card.get_value == self.cards[i1+3].get_value:
                 self.best_hand = self.cards[i1:i1+4]
                 self.hand_type = 'Four of a kind'
-
 
     def check_straight_flush(cards):
         """
@@ -352,9 +358,6 @@ my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
-
-
-
 
 my_hand.sort_hand()
 my_hand.reveal_cards()
