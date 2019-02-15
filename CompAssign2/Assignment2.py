@@ -1,6 +1,7 @@
 from enum import Enum
 from random import shuffle
 from collections import Counter  # Counter is convenient for counting objects (a specialized dictionary)
+import copy
 
 
 # TODO: ask Thomas about get_value must be overloaded
@@ -55,6 +56,7 @@ class Suit(Enum):
 
     def __str__(self):
         return self.name.capitalize()
+
 
 
 class NumberedCard(PlayingCard):
@@ -165,8 +167,8 @@ class Hand:
             deck.add_trash_card(self.cards.pop(i1))
 
     def reveal_cards(self):
-        for card in self.cards:
-            print(card)
+        msg = 'The hand includes: ' + ''.join(str(self.cards))
+        print(msg)
 
     def sort_hand(self):
         self.cards.sort()
@@ -221,24 +223,24 @@ and the highest value(s) (and perhaps suits). The  PokerHand should overload the
 which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
 # TODO: Want to add these in a separate file
 
-# TODO: Är det meningen att vi ska inherita från Hand? Hur ser konstruktorn ut?
-
 
 class PokerHand:
     def __init__(self, poker_hand):
         self.cards = poker_hand
         self.cards.sort()
         self.best_hand = None
-        self.hand_type = None
         self.high_card = None
+        self.hand_type = None
         self.check_hand()
 
     def check_hand(self):
         # Go through all functions and calculate values
         self.check_high_card()
         self.check_pair()
-        self.check_flush()
-
+        self.check_toak()
+        self.check_foak()
+        self.check_straight()
+        #  check_high_card(cards)
 
     def check_high_card(self):
         max_card = self.cards[0]
@@ -250,37 +252,37 @@ class PokerHand:
         self.hand_type = 'High Card'
 
     def check_pair(self):
-
         for card1 in self.cards:
             for card2 in self.cards:
-                if card1.get_value() == card2.get_value() and card1.suit != card2.suit:
-                    self.best_hand = [card1, card2]
-                    self.hand_type = 'Pair'
-
-    def check_toak(self): #three of a kind
-        for card1 in self.cards:
-            for card2 in self.cards:
-                if card1.get_value() == card2.get_value() and card1.suit != card2.suit:
+                if card1.get_value == card2.get_value and card1.suit != card2.suit:
                     self.best_hand = [card1, card2]
                     self.hand_type = 'Pair'
 
     def check_two_pair(self):
         pass
 
+    def check_toak(self): #three of a kind
+        for i1, card in enumerate(self.cards[0:-3]):
+            if card.get_value == self.cards[i1+2].get_value():
+                self.best_hand = self.cards[i1:i1+3]
+                self.hand_type = 'Three of a kind'
+
     def check_straight(self):
-        pass
+        for i1, card in enumerate(self.cards[0:-4]):
+            card_value = card.value
+            for i2 in range(1, 5):
+                if self.cards[i1+i2] == 1:
+                    pass
+                # TODO: Fix method
 
     def check_flush(self):
-        suits = [card.suit for card in self.cards]
-        if len(set(suits)) == 1:
-            self.best_hand = [] # vad ska denna innehålla?
-            self.hand_type = 'Flush'
-            return True
-        else:
-            return False
+        pass
 
     def check_foak(self):  # four of a kind
-        pass
+        for i1, card in enumerate(self.cards[0:-4]):
+            if card.get_value == self.cards[i1+3].get_value:
+                self.best_hand = self.cards[i1:i1+4]
+                self.hand_type = 'Four of a kind'
 
 
     def check_straight_flush(cards):
@@ -326,7 +328,8 @@ class PokerHand:
                 if two != three:
                     return three, two
 
-
+    def __repr__(self):
+        return '{}'.format(self.best_hand)
 
 
 my_deck = StandardDeck()
@@ -337,10 +340,27 @@ my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
-
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
 
 my_hand.sort_hand()
 my_hand.reveal_cards()
 
 ph = PokerHand(my_hand.cards)
-print("Best is " + str(ph.best_hand))
+print(ph.best_hand)
+print(ph.hand_type)
