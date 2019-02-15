@@ -346,7 +346,8 @@ my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
-
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
 
 
 
