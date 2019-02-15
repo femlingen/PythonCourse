@@ -221,7 +221,7 @@ class StandardDeck:
 (high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush) 
 and the highest value(s) (and perhaps suits). The  PokerHand should overload the < operator in order to compare 
 which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
-# TODO: Want to add these in a separate file
+
 
 
 class PokerHand:
@@ -239,7 +239,7 @@ class PokerHand:
         self.check_pair()
         self.check_toak()
         self.check_foak()
-        self.check_straight()
+        # self.check_straight()
         #  check_high_card(cards)
 
     def check_high_card(self):
@@ -268,12 +268,18 @@ class PokerHand:
                 self.hand_type = 'Three of a kind'
 
     def check_straight(self):
+        best_straight = []
         for i1, card in enumerate(self.cards[0:-4]):
-            card_value = card.value
+            card_value = card.get_value()
+            check_for_straigh = True
             for i2 in range(1, 5):
-                if self.cards[i1+i2] == 1:
-                    pass
-                # TODO: Fix method
+                if self.cards[i1+i2].get_value() == card_value+1:
+                    card_value = self.cards[i1+i2].get_value()
+                else:
+                    check_for_straigh = False
+                    break
+
+
 
     def check_flush(self):
         pass
@@ -340,23 +346,10 @@ my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
-my_hand.take_card(my_deck)
+
+
+
+
 
 my_hand.sort_hand()
 my_hand.reveal_cards()
