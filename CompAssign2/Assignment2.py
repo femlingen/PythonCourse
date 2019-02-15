@@ -138,7 +138,7 @@ class KingCard(PlayingCard):
     def __repr__(self):
         return 'King of {}'.format(self.suit)
 
-
+# TODO: TEST
 """
 Task 2: The  Hand  must have methods for adding a new card, dropping several cards (based on an index list), 
 and sorting the cards. There must also be a method  best_poker_hand( self , cards=[])  
