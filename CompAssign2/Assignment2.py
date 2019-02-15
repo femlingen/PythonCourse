@@ -260,7 +260,7 @@ class PokerHand:
 
     def check_two_pair(self):
         pass
-
+# TODO Test
     def check_toak(self): #three of a kind
         for i1, card in enumerate(self.cards[0:-3]):
             if card.get_value == self.cards[i1+2].get_value():
