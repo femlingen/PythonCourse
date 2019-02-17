@@ -58,7 +58,6 @@ class Suit(Enum):
         return self.name.capitalize()
 
 
-
 class NumberedCard(PlayingCard):
     """
     A class for making card objects between and including value 2 and 10
@@ -161,7 +160,7 @@ class Hand:
 
     def drop_cards(self, deck, index=None):
         if index is None:
-            index = [0]
+            return False
         sorted(index)
         for i1 in reversed(index):
             deck.add_trash_card(self.cards.pop(i1))
