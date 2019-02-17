@@ -238,8 +238,10 @@ class PokerHand:
         self.check_high_card()
         self.check_pair()
         self.check_toak()
+        self.check_for_three()
         self.check_foak()
         self.check_flush()
+        self.check_two_pair()
         # self.check_straight()
         #  check_high_card(cards)
 
@@ -253,31 +255,73 @@ class PokerHand:
         self.hand_type = 'High Card'
 
     def check_pair(self):
+
         for card1 in self.cards:
             for card2 in self.cards:
                 if card1.get_value == card2.get_value and card1.suit != card2.suit:
                     self.best_hand = [card1, card2]
                     self.hand_type = 'Pair'
+                    return True
 
     def check_two_pair(self):
-        pass
-# TODO Test
+        # check if one pair and
+        # pop the pair
+        # check if another pair
+        temp_list = self.cards
+        current_hand = self.cards
+        list_to_pop_to = []
+
+        # for i1, card1 in enumerate(temp_list):
+        #     for i2, card2 in enumerate(temp_list):
+        #         if card1.get_value == card2.get_value and card1.suit != card2.suit:
+        #             list_to_pop_to.append(temp_list.pop(i1))
+        #             list_to_pop_to.append(temp_list.pop(i2))
+        # print(list_to_pop_to)
+
+# TODO Test both solutions
     def check_toak(self): #three of a kind
-        for i1, card in enumerate(self.cards[0:-3]):
-            if card.get_value == self.cards[i1+2].get_value():
-                self.best_hand = self.cards[i1:i1+3]
-                self.hand_type = 'Three of a kind'
+        three_of_a_kind = False
+
+        if self.check_pair(): # do only if there already is a pair in the solution
+            cnt = Counter()
+            for card in self.cards:
+                cnt[card.get_value()] += 1
+                # print("Most common " + str(cnt.most_common(1))) # testing purpose
+                # print("The value of the most common " + str(cnt.most_common(1)[0][0])) # testing purpose.
+
+                if cnt.most_common(1)[0][1] == 3: # if there are three of the most frequent. However, doesn't work for 2 * three of a kind
+                    for card1 in self.cards:
+                        if card1.get_value() == cnt.most_common(1)[0][0]:
+                            self.hand_type = 'Three of a kind'
+                            three_of_a_kind = True
+
+        return three_of_a_kind
+        # Old solution
+        # for i1, card in enumerate(self.cards[0:-3]):
+        #     if card.get_value == self.cards[i1+2].get_value():
+        #         self.best_hand = self.cards[i1:i1+3]
+        #         self.hand_type = 'Three of a kind'
+
+# TODO Test both solutions.
+    def check_for_three(self):
+        value_count = Counter()
+        for c in self.cards:
+            value_count[c.get_value()] += 1
+        # Find the card ranks that have at least three of a kind
+        threes = [v[0] for v in value_count.items() if v[1] >= 3]
+        threes.sort()
+        print(threes)
 
     def check_straight(self): # TODO: Does this work?
         best_straight = []
         for i1, card in enumerate(self.cards[0:-4]):
             card_value = card.get_value()
-            check_for_straigh = True
+            check_for_straight = True
             for i2 in range(1, 5):
                 if self.cards[i1+i2].get_value() == card_value+1:
                     card_value = self.cards[i1+i2].get_value()
                 else:
-                    check_for_straigh = False
+                    check_for_straight = False
                     break
 
     def check_flush(self): # TODO: maybe change this since it might not be the best solution
@@ -289,7 +333,6 @@ class PokerHand:
             for card1 in reversed(self.cards):
                 if card1.suit == cnt.most_common(1)[0][0]:
                     temp_list.append(card1)
-                    print("Färg " + str(self.best_hand))
                     if len(temp_list) == 5:
                         self.hand_type = 'Flush'
                         self.best_hand = temp_list
@@ -351,6 +394,8 @@ class PokerHand:
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
 my_hand = Hand()
+my_hand.take_card(my_deck)
+my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
 my_hand.take_card(my_deck)
