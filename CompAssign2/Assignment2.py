@@ -411,3 +411,6 @@ print(ph.hand_type)
 # Vi kan också göra en lista med funktionerna func_lista = [check_pair, check_toak, osv] som kan breaka då vi
 # hittat den bästa handen (om vi börjar från det bästa)
 #
+# Outputten från PokerHand behöver inte vara korten då det inte är viktigt
+# Spelaren i sig skall inte se detta så därför är den outputten inte viktigt, och det kunde bli svårt enl
+# föreläsaren att göra hos funktioner som kåk så det kunde vi skippa.
