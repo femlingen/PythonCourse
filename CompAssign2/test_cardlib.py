@@ -49,6 +49,25 @@ def test_hand():
     assert test_hand.drop_cards(test_deck) == False
 
 
+def test_standard_deck():
+    # test shuffle the standard_deck
+    pass
+
+
+def test_removing_from_deck():
+    pass
+
+
+# testing creating a test class
+class TestClassStandardDeck(StandardDeck):
+
+    def test_one(self):
+        assert 1 == 1
+
+    def test_two(self):
+        assert 1 == 1
+
+
 
     # TODO: test if the card we picked was removed from the deck
 
