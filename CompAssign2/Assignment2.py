@@ -230,6 +230,20 @@ class PokerHand:
         self.best_hand = []
         self.high_card = None
         self.hand_type = None
+        # TODO: Test att köra med hjälp av lista vid mån av tid och ork (Koden nedan)
+        #func_list = []
+        #func_list.append(self.check_straight_flush())
+        #func_list.append(self.check_foak())
+        #func_list.append(self.check_full_house())
+        #func_list.append(self.check_flush())
+        #func_list.append(self.check_straight())
+        #func_list.append(self.check_toak())
+        #func_list.append(self.check_two_pair())
+        #func_list.append(self.check_pair())
+        #func_list.append(self.check_high_card())
+        #for func in func_list:
+        #    func(cards)
+
         self.check_high_card(cards)
         self.check_pair(cards)
         self.check_toak(cards)
@@ -238,6 +252,7 @@ class PokerHand:
         self.check_two_pair(cards)
         self.check_straight(cards)
         self.check_straight_flush(cards)
+        self.check_full_house(cards)
 
         #  check_high_card(cards)
     #def check_hand(self):
@@ -382,6 +397,8 @@ class PokerHand:
         for three in reversed(threes):
             for two in reversed(twos):
                 if two != three:
+                    self.best_hand = [three, two]
+                    self.hand_type = 'Full House'
                     return three, two
 
     def __repr__(self):
@@ -393,9 +410,9 @@ my_deck.shuffle_cards()
 my_hand = Hand()
 my_hand.take_card(NumberedCard(10, Suit.hearts))
 my_hand.take_card(JackCard(Suit.hearts))
-my_hand.take_card(QueenCard(Suit.hearts))
-my_hand.take_card(KingCard(Suit.hearts))
-my_hand.take_card(AceCard(Suit.hearts))
+my_hand.take_card(JackCard(Suit.spades))
+my_hand.take_card(JackCard(Suit.diamonds))
+my_hand.take_card(NumberedCard(10, Suit.diamonds))
 #my_hand.take_card(NumberedCard(3,Suit.spades))
 my_hand.sort_hand()
 my_hand.reveal_cards()
