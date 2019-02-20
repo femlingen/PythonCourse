@@ -8,7 +8,7 @@ import copy
 # TODO: create from your written docstrings
 # TODO: write tests
 # TODO: Optional step: Create a class to represent a Player for a Texas Hold’em poker game
-# TODO: Ask about get_value static, do they have to be methods?
+
 
 """ This is an assignment in course Object Oriented Programming in Python - DAT171 """
 __author__ = "Lucas Jutvik & Frida Femling"
@@ -236,7 +236,7 @@ class PokerHand:
         self.check_foak(cards)
         self.check_flush(cards)
         self.check_two_pair(cards)
-        # self.check_straight()
+        self.check_straight(cards)
         #  check_high_card(cards)
     #def check_hand(self):
         # Go through all functions and calculate values
@@ -385,22 +385,23 @@ class PokerHand:
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
 my_hand = Hand()
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
+my_hand.take_card(NumberedCard(10, Suit.hearts))
+my_hand.take_card(JackCard(Suit.hearts))
+my_hand.take_card(QueenCard(Suit.hearts))
+my_hand.take_card(KingCard(Suit.hearts))
+my_hand.take_card(AceCard(Suit.diamonds))
+my_hand.sort_hand()
+my_hand.reveal_cards()
 
 # TODO: Vi tog bort att take card tog en deck som argument för att i nästa uppgift skall det bli mycket
 # enklare såhär får att dealern skall kunna ge kort till "händer" så istället bör det kallas på att vår deck
 # skall deala ett kort till handen
 
 
-my_hand.sort_hand()
-my_hand.reveal_cards()
+
+
 
 ph = PokerHand(my_hand.cards)
-print(ph.best_hand)
 print(ph.hand_type)
 
 
