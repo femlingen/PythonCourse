@@ -237,6 +237,8 @@ class PokerHand:
         self.check_flush(cards)
         self.check_two_pair(cards)
         self.check_straight(cards)
+        self.check_straight_flush(cards)
+
         #  check_high_card(cards)
     #def check_hand(self):
         # Go through all functions and calculate values
@@ -314,6 +316,9 @@ class PokerHand:
                 else:
                     check_for_straight = False
                     break
+        if check_for_straight == True:
+            self.best_hand = cards[i1:i2+1]
+            self.hand_type = 'Straight'
 
     def check_flush(self, cards): # TODO: maybe change this since it might not be the best solution
         temp_list = []
@@ -342,17 +347,18 @@ class PokerHand:
         :param cards: A list of playing cards.
         :return: None if no straight flush is found, else the value of the top card.
         """
-        vals = [(c.give_value(), c.suit) for c in cards] \
-            + [(1, c.suit) for c in cards if c.give_value() == 14]  # Add the aces!
+        vals = [(c.get_value(), c.suit) for c in cards] \
+            + [(1, c.suit) for c in cards if c.get_value() == 14]  # Add the aces!
         for c in reversed(cards):  # Starting point (high card)
             # Check if we have the value - k in the set of cards:
             found_straight = True
             for k in range(1, 5):
-                if (c.give_value() - k, c.suit) not in vals:
+                if (c.get_value() - k, c.suit) not in vals:
                     found_straight = False
                     break
             if found_straight:
-                return c.give_value()
+                self.best_hand = c
+                self.hand_type = 'Straight Flush'
 
 
     def check_full_house(self, cards):
@@ -364,7 +370,7 @@ class PokerHand:
         """
         value_count = Counter()
         for c in cards:
-            value_count[c.give_value()] += 1
+            value_count[c.get_value()] += 1
         # Find the card ranks that have at least three of a kind
         threes = [v[0] for v in value_count.items() if v[1] >= 3]
         threes.sort()
@@ -389,7 +395,8 @@ my_hand.take_card(NumberedCard(10, Suit.hearts))
 my_hand.take_card(JackCard(Suit.hearts))
 my_hand.take_card(QueenCard(Suit.hearts))
 my_hand.take_card(KingCard(Suit.hearts))
-my_hand.take_card(AceCard(Suit.diamonds))
+my_hand.take_card(AceCard(Suit.hearts))
+#my_hand.take_card(NumberedCard(3,Suit.spades))
 my_hand.sort_hand()
 my_hand.reveal_cards()
 
@@ -403,7 +410,7 @@ my_hand.reveal_cards()
 
 ph = PokerHand(my_hand.cards)
 print(ph.hand_type)
-
+print(ph.best_hand)
 
 # Pokerhand tar input cards som ej läggs till i self länger då föreläsarnen ansåg det som bättre
 # Vi behöver inte spara "best_hand" vi behöver egentligen bara spara ett värde för att kunna jämföra händerna
@@ -415,3 +422,4 @@ print(ph.hand_type)
 # Outputten från PokerHand behöver inte vara korten då det inte är viktigt
 # Spelaren i sig skall inte se detta så därför är den outputten inte viktigt, och det kunde bli svårt enl
 # föreläsaren att göra hos funktioner som kåk så det kunde vi skippa.
+
