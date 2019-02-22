@@ -5,6 +5,7 @@ import copy
 
 
 # TODO: ask Thomas about get_value must be overloaded
+# TODO ask about the comparison operators
 # TODO: create from your written docstrings
 # TODO: write tests
 # TODO: Optional step: Create a class to represent a Player for a Texas Hold’em poker game
@@ -172,6 +173,14 @@ class Hand:
     def sort_hand(self):
         self.cards.sort()
 
+    """ There must also be a method  best_poker_hand( self , cards=[])  which computes the best 
+    hand out of the cards in the hand and cards in the input argument. The  best_poker_hand  method returns 
+    a  PokerHand . It should be able to handle a total of more than 5 cards (as is the case in Texas Hold ’em). """
+
+    def best_poker_hand(self, cards=[]):
+        # should return a pokerhand
+        pass
+
 
 """ Task 3 - The deck:  A  StandardDeck ()  must create a full deck of (52) cards. 
 There should be functions for shuffling and taking the top card (which removes the card from the deck). """
@@ -186,8 +195,6 @@ class StandardDeck:
     def __init__(self):
         self.trash_pile = []
         self.deck_list = []
-        suit_list = [Suit.spades, Suit.diamonds, Suit.clubs, Suit.hearts]
-
         for suit in Suit:
             self.deck_list.append(AceCard(suit))
             for counter in range(2, 11):
@@ -222,100 +229,91 @@ and the highest value(s) (and perhaps suits). The  PokerHand should overload the
 which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
 
 
+class PokerType(Enum):
+
+    straight_flush = 8
+    four_of_kind = 7
+    full_house = 6
+    flush = 5
+    straight = 4
+    three_of_kind = 3
+    two_pair = 2
+    one_pair = 1
+    high_card = 0
+
+    def __lt__(self, other):
+        pass #TODO
+
+    def __eq__(self, other):
+        pass #TODO
+
 
 class PokerHand:
+
     def __init__(self, poker_hand):
         cards = poker_hand
         cards.sort()
-        self.best_hand = []
-        self.high_card = None
-        self.hand_type = None
-        self.check_high_card(cards)
-        self.check_pair(cards)
-        self.check_toak(cards)
-        self.check_foak(cards)
-        self.check_flush(cards)
-        self.check_two_pair(cards)
-        self.check_straight(cards)
-        #  check_high_card(cards)
-    #def check_hand(self):
-        # Go through all functions and calculate values
 
+        checks = [PokerHand.check_straight_flush, PokerHand.check_foak, PokerHand.check_full_house,
+                  PokerHand.check_flush, PokerHand.check_straight, PokerHand.check_for_three,
+                  PokerHand.check_two_pair, PokerHand.check_pair, PokerHand.check_high_card]
 
-    def check_high_card(self,cards):
-        self.best_hand = cards[-1]
-        self.high_card = cards[-1]
-        self.hand_type = 'High Card'
+        for check, htype in zip(checks, PokerType): # looping over functions since they could be see as objects.
+            # Uses zip to compare two lists values
+            tmp = check(cards)
+            if tmp is not None:
+                self.high_card = tmp
+                self.hand_type = htype
+                break
 
-    def check_pair(self, cards):
-        for i1, card1 in enumerate(cards[0:-1], start=1):
-            if card1.get_value() == cards[i1].get_value():
-                self.best_hand = [card1, cards[i1]]
-                self.hand_type = 'Pair'
-                return True
+    @staticmethod
+    def check_high_card(cards):
+        card = cards[-1]
+        return card.get_value()
 
-    def check_two_pair(self, cards):
-        # check if one pair and
-        # pop the pair
-        # check if another pair
-        temp_list = cards
-        current_hand = cards
-        list_to_pop_to = []
+    @staticmethod
+    def check_pair(cards):
+        for i in range(len(cards)-1):
+            if cards[i].get_value() == cards[i+1].get_value():
+                return cards[i].get_value()
 
-        # for i1, card1 in enumerate(temp_list):
-        #     for i2, card2 in enumerate(temp_list):
-        #         if card1.get_value == card2.get_value and card1.suit != card2.suit:
-        #             list_to_pop_to.append(temp_list.pop(i1))
-        #             list_to_pop_to.append(temp_list.pop(i2))
-        # print(list_to_pop_to)
+    @staticmethod
+    def check_two_pair(cards):
+        value_count = Counter()
+        for c in cards:
+            value_count[c.get_value()] += 1
+        two_pair = [v[0] for v in value_count.items() if v[1] >= 2]
+        two_pair.sort(reverse=True)
+        if len(two_pair) > 1:
+            return two_pair[0], two_pair[1]
 
-# TODO Test both solutions
-    def check_toak(self, cards): #three of a kind
-        # three_of_a_kind = False
-        #
-        # if self.check_pair(): # do only if there already is a pair in the solution
-        #     cnt = Counter()
-        #     for card in self.cards:
-        #         cnt[card.get_value()] += 1
-        #         # print("Most common " + str(cnt.most_common(1))) # testing purpose
-        #         # print("The value of the most common " + str(cnt.most_common(1)[0][0])) # testing purpose.
-        #
-        #         if cnt.most_common(1)[0][1] == 3: # if there are three of the most frequent. However, doesn't work for 2 * three of a kind
-        #             for card1 in self.cards:
-        #                 if card1.get_value() == cnt.most_common(1)[0][0]:
-        #                     self.hand_type = 'Three of a kind'
-        #                     three_of_a_kind = True
-        #
-        # return three_of_a_kind
-         # Old solution, nu fungerande
-         for i1, card in enumerate(cards[0:-3]):
-             if card.get_value() == cards[i1+2].get_value():
-                 self.best_hand = cards[i1:i1+3]
-                 self.hand_type = 'Three of a kind'
+    @staticmethod
+    def check_for_three(cards):
+        value_count = Counter()
+        for c in cards:
+            value_count[c.get_value()] += 1
+        threes = [v[0] for v in value_count.items() if v[1] >= 3]
+        threes.sort()
 
-# TODO Test both solutions.
-#     def check_for_three(self):
-#         value_count = Counter()
-#         for c in self.cards:
-#             value_count[c.get_value()] += 1
-#         # Find the card ranks that have at least three of a kind
-#         threes = [v[0] for v in value_count.items() if v[1] >= 3]
-#         threes.sort()
-#         print(threes)
+        if len(threes) > 0:
+            return threes[0] # maybe not the right way of returning the value
 
-    def check_straight(self, cards): # TODO: Does this work?
-        best_straight = []
-        for i1, card in enumerate(cards[0:-4]):
-            card_value = card.get_value()
-            check_for_straight = True
-            for i2 in range(1, 5):
-                if cards[i1+i2].get_value() == card_value+1:
-                    card_value = cards[i1+i2].get_value()
-                else:
-                    check_for_straight = False
+    @staticmethod
+    def check_straight(cards):
+        vals = [c.get_value() for c in cards]
+        for c in reversed(cards):  # Starting point (high card)
+            found_straight = True
+            for k in range(1, 5):
+                if (c.get_value() - k) not in vals:
+                    found_straight = False
                     break
 
-    def check_flush(self, cards): # TODO: maybe change this since it might not be the best solution
+            if found_straight:
+                high_card = cards[0]
+                return high_card.get_value()
+
+    @staticmethod
+    def check_flush(cards):
         temp_list = []
         cnt = Counter()
         for card in cards:
@@ -325,37 +323,40 @@ class PokerHand:
                 if card1.suit == cnt.most_common(1)[0][0]:
                     temp_list.append(card1)
                     if len(temp_list) == 5:
-                        self.hand_type = 'Flush'
-                        self.best_hand = temp_list
                         break
+            return card1.get_value()
 
-    def check_foak(self, cards):  # four of a kind
-        for i1, card in enumerate(cards[0:-4]):
-            if card.get_value == cards[i1+3].get_value:
-                self.best_hand = cards[i1:i1+4]
-                self.hand_type = 'Four of a kind'
+    @staticmethod
+    def check_foak(cards):
+        value_count = Counter()
+        for c in cards:
+            value_count[c.get_value()] += 1
+        fours = [v[0] for v in value_count.items() if v[1] >= 4]
+        if len(fours) > 0:  # double checking it
+            return fours[0]
 
-    def check_straight_flush(self, cards):
+    @staticmethod
+    def check_straight_flush(cards):
         """
         Checks for the best straight flush in a list of cards (may be more than just 5)
 
         :param cards: A list of playing cards.
         :return: None if no straight flush is found, else the value of the top card.
         """
-        vals = [(c.give_value(), c.suit) for c in cards] \
-            + [(1, c.suit) for c in cards if c.give_value() == 14]  # Add the aces!
+        vals = [(c.get_value(), c.suit) for c in cards] \
+            + [(1, c.suit) for c in cards if c.get_value() == 14]  # Add the aces!
         for c in reversed(cards):  # Starting point (high card)
             # Check if we have the value - k in the set of cards:
             found_straight = True
             for k in range(1, 5):
-                if (c.give_value() - k, c.suit) not in vals:
+                if (c.get_value() - k, c.suit) not in vals:
                     found_straight = False
                     break
             if found_straight:
-                return c.give_value()
+                return c.get_value()
 
-
-    def check_full_house(self, cards):
+    @staticmethod
+    def check_full_house(cards):
         """
         Checks for the best full house in a list of cards (may be more than just 5)
 
@@ -364,7 +365,7 @@ class PokerHand:
         """
         value_count = Counter()
         for c in cards:
-            value_count[c.give_value()] += 1
+            value_count[c.get_value()] += 1
         # Find the card ranks that have at least three of a kind
         threes = [v[0] for v in value_count.items() if v[1] >= 3]
         threes.sort()
@@ -378,18 +379,16 @@ class PokerHand:
                 if two != three:
                     return three, two
 
-    def __repr__(self):
-        return '{}'.format(self.best_hand)
-
 
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
 my_hand = Hand()
-my_hand.take_card(NumberedCard(10, Suit.hearts))
+my_hand.take_card(NumberedCard(8, Suit.hearts))
+my_hand.take_card(NumberedCard(2, Suit.diamonds))
+my_hand.take_card(NumberedCard(2, Suit.clubs))
 my_hand.take_card(JackCard(Suit.hearts))
-my_hand.take_card(QueenCard(Suit.hearts))
+my_hand.take_card(JackCard(Suit.diamonds))
 my_hand.take_card(KingCard(Suit.hearts))
-my_hand.take_card(AceCard(Suit.diamonds))
 my_hand.sort_hand()
 my_hand.reveal_cards()
 
@@ -397,21 +396,9 @@ my_hand.reveal_cards()
 # enklare såhär får att dealern skall kunna ge kort till "händer" så istället bör det kallas på att vår deck
 # skall deala ett kort till handen
 
-
-
-
-
 ph = PokerHand(my_hand.cards)
-print(ph.hand_type)
+print(ph.hand_type.value)
+print(PokerType.full_house.value)
 
 
-# Pokerhand tar input cards som ej läggs till i self länger då föreläsarnen ansåg det som bättre
-# Vi behöver inte spara "best_hand" vi behöver egentligen bara spara ett värde för att kunna jämföra händerna
-# Och vilken typ av hand det är
-# Vi behövde inte heller ha en egen funktion för "check_hand" utan kan göra det direkt i __init__
-# Vi kan också göra en lista med funktionerna func_lista = [check_pair, check_toak, osv] som kan breaka då vi
-# hittat den bästa handen (om vi börjar från det bästa)
-#
-# Outputten från PokerHand behöver inte vara korten då det inte är viktigt
-# Spelaren i sig skall inte se detta så därför är den outputten inte viktigt, och det kunde bli svårt enl
-# föreläsaren att göra hos funktioner som kåk så det kunde vi skippa.
+
