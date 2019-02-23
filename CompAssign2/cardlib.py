@@ -1,13 +1,9 @@
 from enum import Enum
 from random import shuffle
 from collections import Counter  # Counter is convenient for counting objects (a specialized dictionary)
-import copy
 
 
-# TODO: ask Thomas about get_value must be overloaded
-# TODO ask about the comparison operators
 # TODO: create from your written docstrings
-# TODO: write tests
 # TODO: Optional step: Create a class to represent a Player for a Texas Hold’em poker game
 
 
@@ -23,12 +19,9 @@ specifications of what is required of your library.
 """
 
 
-# --- Variable declaration ---
-
-
 class PlayingCard:
     """
-    A general class for all cards made
+    A class for all cards made
     """
     def __init__(self, suit):
         self.suit = suit
@@ -272,19 +265,43 @@ class PokerHand:
                 self.hand_type = htype
                 break
 
+    def __lt__(self, other):
+            return self.hand_type.value < other.hand_type.value
+
+    def __eq__(self, other):
+            return self.hand_type.value == other.hand_type.value
+
     @staticmethod
     def check_high_card(cards):
+        """
+        Checks for the highest card in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if no high card is found, else the highest card of the cards
+         """
         card = cards[-1]
         return card.get_value()
 
     @staticmethod
     def check_pair(cards):
+        """
+        Checks for a pair in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if no pair is found, else the highest card of the pair
+         """
         for i in range(len(cards)-1):
             if cards[i].get_value() == cards[i+1].get_value():
                 return cards[i].get_value()
 
     @staticmethod
     def check_two_pair(cards):
+        """
+        Checks for two pairs in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if no pair is found, else a tuple of the two pair
+        """
         value_count = Counter()
         for c in cards:
             value_count[c.get_value()] += 1
@@ -295,6 +312,13 @@ class PokerHand:
 
     @staticmethod
     def check_for_three(cards):
+        """
+        Checks for three of a kind in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if not three of a kind is found, else the value of the three of a kind
+        """
+
         value_count = Counter()
         for c in cards:
             value_count[c.get_value()] += 1
@@ -306,6 +330,13 @@ class PokerHand:
 
     @staticmethod
     def check_straight(cards):
+        """
+        Checks for a straight in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if not straight is found, else the value of the highest card of the straight
+        """
+
         vals = [c.get_value() for c in cards]
         for c in reversed(cards):  # Starting point (high card)
             found_straight = True
@@ -320,6 +351,13 @@ class PokerHand:
 
     @staticmethod
     def check_flush(cards):
+        """
+        Checks for four a flush in a list of cards
+
+        :param cards: A list of playing cards
+        :return: None if no flush is found, else the highest card of the flush
+        """
+
         temp_list = []
         cnt = Counter()
         for card in cards:
@@ -334,6 +372,13 @@ class PokerHand:
 
     @staticmethod
     def check_foak(cards):
+        """
+        Checks for four of a kind in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if not four of a kind is found, else the value of the four of a kind
+        """
+
         value_count = Counter()
         for c in cards:
             value_count[c.get_value()] += 1
@@ -433,4 +478,4 @@ print(fridas_hand.best_poker_hand(table_cards).hand_type)
 print("LINUS")
 print(linus_hand.best_poker_hand(table_cards).hand_type)
 
-
+print(linus_hand.best_poker_hand(table_cards).__lt__(fridas_hand.best_poker_hand(table_cards)))
