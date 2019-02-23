@@ -149,7 +149,6 @@ The  best_poker_hand  method returns a  PokerHand . """
 class Hand:
     """
     A class for creating a hand (player) object that can draw cards from a deck to it
-    :return: Returns a list of standard deck of cards
     """
 
     def __init__(self, name='Player_Name'):
@@ -194,7 +193,6 @@ There should be functions for shuffling and taking the top card (which removes t
 class StandardDeck:
     """
     A class for creating and altering decks
-    :return: Returns a list of standard deck of cards
     """
 
     def __init__(self):
@@ -235,7 +233,9 @@ which  PokerHand  is valued highest based on the type, value(s) (and possible su
 
 
 class PokerType(Enum):
-
+    """
+    A class that compares different hands in poker
+    """
     straight_flush = 8
     four_of_kind = 7
     full_house = 6
@@ -430,7 +430,8 @@ print("---------------")
 """ calling for the best_poker_hand function and printing the best pokerhand """
 print("FRIDAS")
 print(fridas_hand.best_poker_hand(table_cards).hand_type)
+print(linus_hand.best_poker_hand(table_cards).high_card)
 print("LINUS")
 print(linus_hand.best_poker_hand(table_cards).hand_type)
-
+print(linus_hand.best_poker_hand(table_cards).high_card)
 
