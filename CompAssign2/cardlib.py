@@ -146,8 +146,7 @@ class Hand:
     :return: Returns a list of standard deck of cards
     """
 
-    def __init__(self, name='Player_Name'):
-        self.player_name = name
+    def __init__(self):
         self.cards = []
 
     def take_card(self, card):
@@ -435,6 +434,12 @@ class PokerHand:
                     return three, two
 
 
+# TODO: Player class
+class Player():
+    def __init__(self, name='Player_Name'):
+        self.player_name = name
+
+
 """ Creating and shuffeling the standarddeck """
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
@@ -483,3 +488,4 @@ print("LINUS")
 print(linus_hand.best_poker_hand(table_cards).hand_type)
 
 print(linus_hand.best_poker_hand(table_cards).__lt__(fridas_hand.best_poker_hand(table_cards)))
+
