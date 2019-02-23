@@ -55,6 +55,7 @@ class Suit(Enum):
 class NumberedCard(PlayingCard):
     """
     A class for making card objects between and including value 2 and 10
+    :param PlayingCard object
     """
     def __init__(self, value, suit):
         super().__init__(suit)  # goes down to PlayingCard-class to fetch PlayingCard
@@ -171,6 +172,7 @@ class Hand:
     a  PokerHand . It should be able to handle a total of more than 5 cards (as is the case in Texas Hold ’em). """
 
     def best_poker_hand(self, cards=[]):
+
         tmp_cards = []
         for element in cards:
             tmp_cards.append(element)
@@ -221,12 +223,6 @@ class StandardDeck:
         return len(self.deck_list)
 
 
-""" The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
-(high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush) 
-and the highest value(s) (and perhaps suits). The  PokerHand should overload the < operator in order to compare 
-which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
-
-
 class PokerType(Enum):
 
     straight_flush = 8
@@ -239,7 +235,6 @@ class PokerType(Enum):
     one_pair = 1
     high_card = 0
 
-    # TODO do we need these?
     def __lt__(self, other):
         return self.get_value() < other.get_value()
 
@@ -247,7 +242,16 @@ class PokerType(Enum):
         return self.get_value() == other.get_value()
 
 
+""" Task 4 The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
+(high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush) 
+and the highest value(s) (and perhaps suits). The  PokerHand should overload the < operator in order to compare 
+which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
+
+
 class PokerHand:
+    """
+      A class for determining the type of a pokerhand
+    """
 
     def __init__(self, poker_hand):
         cards = poker_hand
