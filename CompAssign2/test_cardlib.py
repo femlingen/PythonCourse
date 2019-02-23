@@ -120,36 +120,40 @@ def test_straight_flush():
     assert p_hand.hand_type.value == PokerType.straight_flush.value
 
 
-def test_best_poker_hand():
-    my_poker_hand = Hand()
-    my_poker_hand.take_card(NumberedCard(5, Suit.diamonds))
-    my_poker_hand.take_card(NumberedCard(9, Suit.hearts))
-    my_poker_hand.take_card(NumberedCard(8, Suit.clubs))
+# TODO Fix test
+# def test_best_poker_hand():
+#     my_poker_hand = Hand()
+#     my_poker_hand.take_card(NumberedCard(5, Suit.diamonds))
+#     my_poker_hand.take_card(NumberedCard(9, Suit.hearts))
+#     my_poker_hand.take_card(NumberedCard(8, Suit.clubs))
+#
+#     tb_cards = [NumberedCard(5, Suit.spades), NumberedCard(7, Suit.diamonds), NumberedCard(8, Suit.diamonds)]
+#
+#     my_poker_hand.best_poker_hand(tb_cards)
+#
+#     assert 1 == 1
+#     # poker_hand = my_poker_hand.best_poker_hand(tb_cards)
+#     # assert poker_hand.hand_type.value == 2
 
-    tb_cards = [NumberedCard(5, Suit.spades), NumberedCard(7, Suit.diamonds), NumberedCard(8, Suit.diamonds)]
 
-    my_poker_hand.best_poker_hand(tb_cards)
-
-    assert 1 == 1
-    # poker_hand = my_poker_hand.best_poker_hand(tb_cards)
-    # assert poker_hand.hand_type.value == 2
-
-
-def test_two_poker_hands(): # TODO
+def test_two_poker_hands():
+    """ Testing one pair against two pair and some decks at the table"""
     two_pair_hand = Hand()
     one_pair_hand = Hand()
 
-    two_pair_hand.take_card(NumberedCard(5, Suit.diamonds))
-    two_pair_hand.take_card(NumberedCard(5, Suit.hearts))
-    two_pair_hand.take_card(NumberedCard(7, Suit.clubs))
-    two_pair_hand.take_card(NumberedCard(7, Suit.spades))
+    tb_cards = [JackCard(Suit.diamonds),QueenCard(Suit.diamonds),NumberedCard(2, Suit.diamonds)]
 
-    one_pair_hand.take_card(NumberedCard(10, Suit.spades))
+    two_pair_hand.take_card(JackCard(Suit.spades))
+    two_pair_hand.take_card(NumberedCard(2, Suit.spades))
+
+    one_pair_hand.take_card(NumberedCard(2, Suit.hearts))
     one_pair_hand.take_card(NumberedCard(10, Suit.diamonds))
 
-    two_pair_hand.best_poker_hand(one_pair_hand)
+    p_h1 = two_pair_hand.best_poker_hand(tb_cards)
+    p_h2 = one_pair_hand.best_poker_hand(tb_cards)
 
-    assert 1 == 1
+    assert p_h1.hand_type.value > p_h2.hand_type.value
+
 
 my_deck = StandardDeck()
 my_deck.shuffle_cards()

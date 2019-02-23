@@ -178,10 +178,12 @@ class Hand:
     a  PokerHand . It should be able to handle a total of more than 5 cards (as is the case in Texas Hold ’em). """
 
     def best_poker_hand(self, cards=[]):
+        tmp_cards = []
+        for element in cards:
+            tmp_cards.append(element)
         for element in self.cards:
-            cards.append(element)
-        poker_hand = PokerHand(cards)
-        print("This is the best poker hand " + str(poker_hand.hand_type))
+            tmp_cards.append(element)
+        poker_hand = PokerHand(tmp_cards)
         return poker_hand
 
 
@@ -389,8 +391,14 @@ my_deck = StandardDeck()
 my_deck.shuffle_cards()
 
 """ Testing creating hands """
-my_hand = Hand()
-table_cards = [my_deck.deal_card(), my_deck.deal_card(), my_deck.deal_card(), ] # create a table card class?
+fridas_hand = Hand()
+linus_hand = Hand()
+table_cards = []
+
+# add 4 random cards to the table
+for i in range(0,5):
+    table_cards.append(my_deck.deal_card())
+
 
 print("---------------")
 print("These are the table cards")
@@ -398,22 +406,31 @@ print(table_cards)
 print("---------------")
 
 """ adding cards to my_hand """
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.take_card(my_deck.deal_card())
-my_hand.sort_hand()
+fridas_hand.take_card(my_deck.deal_card())
+fridas_hand.take_card(my_deck.deal_card())
+fridas_hand.sort_hand()
+
+""" adding cards to my_hand """
+
+linus_hand.take_card(my_deck.deal_card())
+linus_hand.take_card(my_deck.deal_card())
+linus_hand.sort_hand()
 
 print("---------------")
-print("These are the hand cards")
-my_hand.reveal_cards()
+print("These are the hand cards of Frida")
+fridas_hand.reveal_cards()
+print("---------------")
+
+
+print("---------------")
+print("These are the hand cards of Linus")
+linus_hand.reveal_cards()
 print("---------------")
 
 """ calling for the best_poker_hand function and printing the best pokerhand """
-my_hand.best_poker_hand(table_cards)
-
-
+print("FRIDAS")
+print(fridas_hand.best_poker_hand(table_cards).hand_type)
+print("LINUS")
+print(linus_hand.best_poker_hand(table_cards).hand_type)
 
 
