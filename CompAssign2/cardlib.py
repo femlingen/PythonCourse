@@ -178,8 +178,11 @@ class Hand:
     a  PokerHand . It should be able to handle a total of more than 5 cards (as is the case in Texas Hold ’em). """
 
     def best_poker_hand(self, cards=[]):
-        # should return a pokerhand
-        pass
+        for element in self.cards:
+            cards.append(element)
+        poker_hand = PokerHand(cards)
+        print("This is the best poker hand " + str(poker_hand.hand_type))
+        return poker_hand
 
 
 """ Task 3 - The deck:  A  StandardDeck ()  must create a full deck of (52) cards. 
@@ -241,11 +244,12 @@ class PokerType(Enum):
     one_pair = 1
     high_card = 0
 
+    # TODO do we need these?
     def __lt__(self, other):
-        pass #TODO
+        return self.get_value() < other.get_value()
 
     def __eq__(self, other):
-        pass #TODO
+        return self.get_value() == other.get_value()
 
 
 class PokerHand:
@@ -259,7 +263,7 @@ class PokerHand:
                   PokerHand.check_two_pair, PokerHand.check_pair, PokerHand.check_high_card]
 
         for check, htype in zip(checks, PokerType): # looping over functions since they could be see as objects.
-            # Uses zip to compare two lists values
+            # Uses zip to compare two lists values.
             tmp = check(cards)
             if tmp is not None:
                 self.high_card = tmp
@@ -380,25 +384,36 @@ class PokerHand:
                     return three, two
 
 
+""" Creating and shuffeling the standarddeck """
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
+
+""" Testing creating hands """
 my_hand = Hand()
-my_hand.take_card(NumberedCard(8, Suit.hearts))
-my_hand.take_card(NumberedCard(2, Suit.diamonds))
-my_hand.take_card(NumberedCard(2, Suit.clubs))
-my_hand.take_card(JackCard(Suit.hearts))
-my_hand.take_card(JackCard(Suit.diamonds))
-my_hand.take_card(KingCard(Suit.hearts))
+table_cards = [my_deck.deal_card(), my_deck.deal_card(), my_deck.deal_card(), ] # create a table card class?
+
+print("---------------")
+print("These are the table cards")
+print(table_cards)
+print("---------------")
+
+""" adding cards to my_hand """
+my_hand.take_card(my_deck.deal_card())
+my_hand.take_card(my_deck.deal_card())
+my_hand.take_card(my_deck.deal_card())
+my_hand.take_card(my_deck.deal_card())
+my_hand.take_card(my_deck.deal_card())
+my_hand.take_card(my_deck.deal_card())
 my_hand.sort_hand()
+
+print("---------------")
+print("These are the hand cards")
 my_hand.reveal_cards()
+print("---------------")
 
-# TODO: Vi tog bort att take card tog en deck som argument för att i nästa uppgift skall det bli mycket
-# enklare såhär får att dealern skall kunna ge kort till "händer" så istället bör det kallas på att vår deck
-# skall deala ett kort till handen
+""" calling for the best_poker_hand function and printing the best pokerhand """
+my_hand.best_poker_hand(table_cards)
 
-ph = PokerHand(my_hand.cards)
-print(ph.hand_type.value)
-print(PokerType.full_house.value)
 
 
 

@@ -8,16 +8,6 @@ from cardlib import *
 # What happens if you try create a card with numerical value 0 or -1?
 
 
-def test_suit_class():
-    assert Suit.clubs != Suit.diamonds and Suit.hearts != Suit.diamonds
-    assert Suit.spades != Suit.hearts and Suit.spades != Suit.diamonds
-
-
-def test_playingcard():
-    # do some shit
-    assert 1 == 1
-
-
 def test_ace_card():
     assert AceCard.get_value() == 14
 
@@ -32,11 +22,6 @@ def test_queen_card():
 
 def test_jack_card():
     assert JackCard.get_value() == 11
-
-
-def test_numbered_card():
-    assert 1 == 1
-    # do some shit
 
 
 def test_playingcard():
@@ -55,15 +40,16 @@ def test_one_pair():
     assert p_hand.hand_type.value == PokerType.one_pair.value
 
 
-# def test_two_pair():
-#     test_hand = Hand()
-#     test_hand.take_card(NumberedCard(5, Suit.clubs))
-#     test_hand.take_card(NumberedCard(5, Suit.diamonds))
-#     test_hand.take_card(NumberedCard(7, Suit.spades))
-#     test_hand.take_card(NumberedCard(8, Suit.hearts))
-#     test_hand.take_card(NumberedCard(7, Suit.hearts))
-#     p_hand = PokerHand(test_hand.cards)
-#     assert p_hand.hand_type.value == PokerType.two_pair.value
+def test_two_pair():
+    test_hand = Hand()
+    test_hand.take_card(NumberedCard(5, Suit.clubs))
+    test_hand.take_card(NumberedCard(5, Suit.diamonds))
+    test_hand.take_card(NumberedCard(7, Suit.spades))
+    test_hand.take_card(NumberedCard(8, Suit.hearts))
+    test_hand.take_card(NumberedCard(7, Suit.hearts))
+    p_hand = PokerHand(test_hand.cards)
+    assert p_hand.hand_type.value == PokerType.two_pair.value
+
 
 def test_check_for_three():
     test_hand = Hand()
@@ -133,6 +119,37 @@ def test_straight_flush():
     p_hand = PokerHand(test_hand.cards)
     assert p_hand.hand_type.value == PokerType.straight_flush.value
 
+
+def test_best_poker_hand():
+    my_poker_hand = Hand()
+    my_poker_hand.take_card(NumberedCard(5, Suit.diamonds))
+    my_poker_hand.take_card(NumberedCard(9, Suit.hearts))
+    my_poker_hand.take_card(NumberedCard(8, Suit.clubs))
+
+    tb_cards = [NumberedCard(5, Suit.spades), NumberedCard(7, Suit.diamonds), NumberedCard(8, Suit.diamonds)]
+
+    my_poker_hand.best_poker_hand(tb_cards)
+
+    assert 1 == 1
+    # poker_hand = my_poker_hand.best_poker_hand(tb_cards)
+    # assert poker_hand.hand_type.value == 2
+
+
+def test_two_poker_hands(): # TODO
+    two_pair_hand = Hand()
+    one_pair_hand = Hand()
+
+    two_pair_hand.take_card(NumberedCard(5, Suit.diamonds))
+    two_pair_hand.take_card(NumberedCard(5, Suit.hearts))
+    two_pair_hand.take_card(NumberedCard(7, Suit.clubs))
+    two_pair_hand.take_card(NumberedCard(7, Suit.spades))
+
+    one_pair_hand.take_card(NumberedCard(10, Suit.spades))
+    one_pair_hand.take_card(NumberedCard(10, Suit.diamonds))
+
+    two_pair_hand.best_poker_hand(one_pair_hand)
+
+    assert 1 == 1
 
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
