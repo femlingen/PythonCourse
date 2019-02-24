@@ -1,13 +1,9 @@
 from enum import Enum
 from random import shuffle
 from collections import Counter  # Counter is convenient for counting objects (a specialized dictionary)
-import copy
 
 
-# TODO: ask Thomas about get_value must be overloaded
-# TODO ask about the comparison operators
 # TODO: create from your written docstrings
-# TODO: write tests
 # TODO: Optional step: Create a class to represent a Player for a Texas Hold’em poker game
 
 
@@ -23,12 +19,9 @@ specifications of what is required of your library.
 """
 
 
-# --- Variable declaration ---
-
-
 class PlayingCard:
     """
-    A general class for all cards made
+    A class for all cards made
     """
     def __init__(self, suit):
         self.suit = suit
@@ -62,6 +55,7 @@ class Suit(Enum):
 class NumberedCard(PlayingCard):
     """
     A class for making card objects between and including value 2 and 10
+    :param PlayingCard object
     """
     def __init__(self, value, suit):
         super().__init__(suit)  # goes down to PlayingCard-class to fetch PlayingCard
@@ -149,21 +143,25 @@ The  best_poker_hand  method returns a  PokerHand . """
 class Hand:
     """
     A class for creating a hand (player) object that can draw cards from a deck to it
+    :return: Returns a list of standard deck of cards
     """
 
-    def __init__(self, name='Player_Name'):
-        self.player_name = name
+    def __init__(self):
         self.cards = []
 
     def take_card(self, card):
         self.cards.append(card)
 
     def drop_cards(self, index=None):
-        if index is None:
-            return False
-        sorted(index)
-        for i1 in reversed(index):
-            self.cards.pop(i1)
+        try:
+            if index is None:
+                return False
+            sorted(index)
+            for i1 in reversed(index):
+                self.cards.pop(i1)
+        except IndexError:
+            print("Index error")
+            return False # don't really know what to return, returning false for test-purpose
 
     def reveal_cards(self):
         msg = 'The hand includes: ' + str(self.cards)
@@ -177,6 +175,10 @@ class Hand:
     a  PokerHand . It should be able to handle a total of more than 5 cards (as is the case in Texas Hold ’em). """
 
     def best_poker_hand(self, cards=[]):
+
+        if len(self.cards) == 0 and len(cards):
+                print("No cards in hand") # TODO proper error handling
+
         tmp_cards = []
         for element in cards:
             tmp_cards.append(element)
@@ -193,6 +195,7 @@ There should be functions for shuffling and taking the top card (which removes t
 class StandardDeck:
     """
     A class for creating and altering decks
+    :return: Returns a list of standard deck of cards
     """
 
     def __init__(self):
@@ -226,16 +229,8 @@ class StandardDeck:
         return len(self.deck_list)
 
 
-""" The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
-(high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush) 
-and the highest value(s) (and perhaps suits). The  PokerHand should overload the < operator in order to compare 
-which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
-
-
 class PokerType(Enum):
-    """
-    A class that compares different hands in poker
-    """
+
     straight_flush = 8
     four_of_kind = 7
     full_house = 6
@@ -246,7 +241,6 @@ class PokerType(Enum):
     one_pair = 1
     high_card = 0
 
-    # TODO do we need these?
     def __lt__(self, other):
         return self.get_value() < other.get_value()
 
@@ -254,7 +248,16 @@ class PokerType(Enum):
         return self.get_value() == other.get_value()
 
 
+""" Task 4 The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
+(high card, one pair, two pair, three of a kind, straight, flush, full house, four of a kind, straight flush) 
+and the highest value(s) (and perhaps suits). The  PokerHand should overload the < operator in order to compare 
+which  PokerHand  is valued highest based on the type, value(s) (and possible suit)."""
+
+
 class PokerHand:
+    """
+      A class for determining the type of a pokerhand
+    """
 
     def __init__(self, poker_hand):
         cards = poker_hand
@@ -272,19 +275,43 @@ class PokerHand:
                 self.hand_type = htype
                 break
 
+    def __lt__(self, other):
+            return self.hand_type.value < other.hand_type.value
+
+    def __eq__(self, other):
+            return self.hand_type.value == other.hand_type.value
+
     @staticmethod
     def check_high_card(cards):
+        """
+        Checks for the highest card in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if no high card is found, else the highest card of the cards
+         """
         card = cards[-1]
         return card.get_value()
 
     @staticmethod
     def check_pair(cards):
+        """
+        Checks for a pair in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if no pair is found, else the highest card of the pair
+         """
         for i in range(len(cards)-1):
             if cards[i].get_value() == cards[i+1].get_value():
                 return cards[i].get_value()
 
     @staticmethod
     def check_two_pair(cards):
+        """
+        Checks for two pairs in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if no pair is found, else a tuple of the two pair
+        """
         value_count = Counter()
         for c in cards:
             value_count[c.get_value()] += 1
@@ -295,6 +322,13 @@ class PokerHand:
 
     @staticmethod
     def check_for_three(cards):
+        """
+        Checks for three of a kind in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if not three of a kind is found, else the value of the three of a kind
+        """
+
         value_count = Counter()
         for c in cards:
             value_count[c.get_value()] += 1
@@ -306,6 +340,13 @@ class PokerHand:
 
     @staticmethod
     def check_straight(cards):
+        """
+        Checks for a straight in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if not straight is found, else the value of the highest card of the straight
+        """
+
         vals = [c.get_value() for c in cards]
         for c in reversed(cards):  # Starting point (high card)
             found_straight = True
@@ -320,6 +361,13 @@ class PokerHand:
 
     @staticmethod
     def check_flush(cards):
+        """
+        Checks for four a flush in a list of cards
+
+        :param cards: A list of playing cards
+        :return: None if no flush is found, else the highest card of the flush
+        """
+
         temp_list = []
         cnt = Counter()
         for card in cards:
@@ -334,6 +382,13 @@ class PokerHand:
 
     @staticmethod
     def check_foak(cards):
+        """
+        Checks for four of a kind in a list of cards
+
+        :param cards: A list of playing cards.
+        :return: None if not four of a kind is found, else the value of the four of a kind
+        """
+
         value_count = Counter()
         for c in cards:
             value_count[c.get_value()] += 1
@@ -386,13 +441,19 @@ class PokerHand:
                     return three, two
 
 
+# TODO: Player class
+class Player():
+    def __init__(self, name='Player_Name'):
+        self.player_name = name
+
+
 """ Creating and shuffeling the standarddeck """
 my_deck = StandardDeck()
 my_deck.shuffle_cards()
 
 """ Testing creating hands """
 fridas_hand = Hand()
-linus_hand = Hand()
+lucas_hand = Hand()
 table_cards = []
 
 # add 4 random cards to the table
@@ -412,9 +473,9 @@ fridas_hand.sort_hand()
 
 """ adding cards to my_hand """
 
-linus_hand.take_card(my_deck.deal_card())
-linus_hand.take_card(my_deck.deal_card())
-linus_hand.sort_hand()
+lucas_hand.take_card(my_deck.deal_card())
+lucas_hand.take_card(my_deck.deal_card())
+lucas_hand.sort_hand()
 
 print("---------------")
 print("These are the hand cards of Frida")
@@ -424,14 +485,12 @@ print("---------------")
 
 print("---------------")
 print("These are the hand cards of Linus")
-linus_hand.reveal_cards()
+lucas_hand.reveal_cards()
 print("---------------")
+lucas_hand.drop_cards([0, 1])
 
 """ calling for the best_poker_hand function and printing the best pokerhand """
 print("FRIDAS")
 print(fridas_hand.best_poker_hand(table_cards).hand_type)
-print(linus_hand.best_poker_hand(table_cards).high_card)
-print("LINUS")
-print(linus_hand.best_poker_hand(table_cards).hand_type)
-print(linus_hand.best_poker_hand(table_cards).high_card)
-
+print("ANTON")
+print(lucas_hand.best_poker_hand(table_cards).hand_type)
