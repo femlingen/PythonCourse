@@ -1,0 +1,7 @@
+[
+  "test_cardlib.py::test_jack",
+  "test_cardlib.py::test_queen",
+  "test_cardlib.py::test_king",
+  "test_cardlib.py::test_ace",
+  "test_cardlib.py::test_nr"
+]
