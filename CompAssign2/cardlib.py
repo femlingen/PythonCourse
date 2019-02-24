@@ -78,6 +78,10 @@ class AceCard(PlayingCard):
 
     @staticmethod
     def get_value():
+        """
+
+        :return: The cards value
+        """
         return 14
 
     def __str__(self):
@@ -94,6 +98,10 @@ class JackCard(PlayingCard):
 
     @staticmethod
     def get_value():
+        """
+
+        :return: The cards value
+        """
         return 11
 
     def __str__(self):
@@ -109,6 +117,9 @@ class QueenCard(PlayingCard):
     """
     @staticmethod
     def get_value():
+        """
+        :return: The cards value
+        """
         return 12
 
     def __str__(self):
@@ -124,6 +135,10 @@ class KingCard(PlayingCard):
     """
     @staticmethod
     def get_value():
+        """
+
+        :return: The cards value
+        """
         return 13
 
     def __str__(self):
