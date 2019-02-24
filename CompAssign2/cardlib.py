@@ -153,11 +153,15 @@ class Hand:
         self.cards.append(card)
 
     def drop_cards(self, index=None):
-        if index is None:
-            return False
-        sorted(index)
-        for i1 in reversed(index):
-            self.cards.pop(i1)
+        try:
+            if index is None:
+                return False
+            sorted(index)
+            for i1 in reversed(index):
+                self.cards.pop(i1)
+        except IndexError:
+            print("Index error")
+            return False # don't really know what to return, returning false for test-purpose
 
     def reveal_cards(self):
         msg = 'The hand includes: ' + str(self.cards)
@@ -171,6 +175,9 @@ class Hand:
     a  PokerHand . It should be able to handle a total of more than 5 cards (as is the case in Texas Hold ’em). """
 
     def best_poker_hand(self, cards=[]):
+
+        if len(self.cards) == 0 and len(cards):
+                print("No cards in hand") # TODO proper error handling
 
         tmp_cards = []
         for element in cards:
@@ -446,7 +453,7 @@ my_deck.shuffle_cards()
 
 """ Testing creating hands """
 fridas_hand = Hand()
-linus_hand = Hand()
+lucas_hand = Hand()
 table_cards = []
 
 # add 4 random cards to the table
@@ -466,9 +473,9 @@ fridas_hand.sort_hand()
 
 """ adding cards to my_hand """
 
-linus_hand.take_card(my_deck.deal_card())
-linus_hand.take_card(my_deck.deal_card())
-linus_hand.sort_hand()
+lucas_hand.take_card(my_deck.deal_card())
+lucas_hand.take_card(my_deck.deal_card())
+lucas_hand.sort_hand()
 
 print("---------------")
 print("These are the hand cards of Frida")
@@ -478,14 +485,12 @@ print("---------------")
 
 print("---------------")
 print("These are the hand cards of Linus")
-linus_hand.reveal_cards()
+lucas_hand.reveal_cards()
 print("---------------")
+lucas_hand.drop_cards([0, 1])
 
 """ calling for the best_poker_hand function and printing the best pokerhand """
 print("FRIDAS")
 print(fridas_hand.best_poker_hand(table_cards).hand_type)
-print("LINUS")
-print(linus_hand.best_poker_hand(table_cards).hand_type)
-
-print(linus_hand.best_poker_hand(table_cards).__lt__(fridas_hand.best_poker_hand(table_cards)))
-
+print("ANTON")
+print(lucas_hand.best_poker_hand(table_cards).hand_type)
