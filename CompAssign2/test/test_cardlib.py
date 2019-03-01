@@ -1,4 +1,4 @@
-from cardlib import *
+from CompAssign3.cardlib import *
 
 """ This is a test class for card library """
 
