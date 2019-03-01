@@ -2,8 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
-from cardlib import *
-import sys
+from CompAssign3.cardlib import *
 
 
 class Player(Hand):
