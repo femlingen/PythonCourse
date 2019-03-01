@@ -19,8 +19,8 @@ class GameView(QWidget):
         layout = QHBoxLayout()
         first_vbox = QVBoxLayout()
         second_vbox = QVBoxLayout()
-        layout.addWidget(first_vbox)
-        layout.addWidget(second_vbox)
+        layout.addLayout(first_vbox)
+        layout.addLayout(second_vbox)
 
         players_hbox = QHBoxLayout()
         player_name_labels = [QLabel('Spelare 1'), QLabel('Spelare 2')] # TODO: Add dynamic player names
@@ -35,13 +35,16 @@ class GameView(QWidget):
         raise_ammount = 0
         #self.players = players TODO: Add when players are back
 
-        self.buttons = [QPushButton('Raise'), QPushButton('Check/Fold'), QPushButton('Fold')]
+        self.buttons = [QPushButton('Raise'), QPushButton('Check/Call'), QPushButton('Fold')]
 
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
         self.slider.setMaximum(1000) # TODO: Add current player stack
         self.slider.setValue(0)
+        layout.addStretch(1)
+        self.setLayout(layout)
+        self.show()
 
 
 
@@ -59,3 +62,4 @@ player1 = Player('Frida', 1000)
 player2 = Player('Lucas', 1000)
 
 game = GameView()
+game_app.exec_()
