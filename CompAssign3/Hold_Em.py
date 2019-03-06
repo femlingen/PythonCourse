@@ -11,6 +11,7 @@ class Player(Hand):
         self.name = player_name
         self.stack = player_stack
 
+
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
@@ -45,76 +46,66 @@ class CardView(QGraphicsView):
     all_cards = __read_cards()
 
 
-class GameView(QWidget):
+class PlayerView(QGroupBox):
+
+    def __init__(self, player):
+        super().__init__()
+        self.namelabel = QLabel(player.name)
+        self.stacklabel = QLabel(player.stack)
+        self.playercards = CardView(player.hand)
+
+
+class TotalPlayerView(QGroupBox):
+
+    def __init__(self):
+        super().__init__()
+
+
+class TableCardsView(QGroupBox):
+    def __init__(self):
+        super().__init__()
+
+
+
+
+class TopView(QGroupBox):
+    def __init__(self):
+        super().__init__()
+
+
+
+
+class GameView(QGroupBox):
     def __init__(self):  # TODO: Add game_model, game_players ?
-        super().__init__(self)
-        layout = QVBoxLayout() # yttersta boxen
-        first_vbox = QHBoxLayout() # översta boen
-        second_vbox = QHBoxLayout() # understa
-        layout.addLayout(first_vbox)
-        layout.addLayout(second_vbox)
+        super().__init__()
 
-        players_hbox = QHBoxLayout()
-        player_name_labels = [QLabel('Spelare 1'), QLabel('Spelare 2')] # TODO: Add dynamic player names
-        player_stack_labels = [QLabel(1000), QLabel(1000)] # TODO: Add dynamic stacks
-        players_hbox.addWidget()
-
-        self.bg = QPixmap('Files/table.png')
-        self.setBackgroundBrush(QBrush(self.bg))
-
-        raise_amount = 0
-        #self.players = players TODO: Add when players are back
+        # self.players = players TODO: Add when players are back
 
         self.buttons = [QPushButton('Raise'), QPushButton('Check/Fold'), QPushButton('Fold')]
+        players_hbox = QHBoxLayout()
+        player_name_labels = [QLabel('Spelare 1'), QLabel('Spelare 2')] # TODO: Add dynamic player names
+        player_stack_labels = [QLabel('1000'), QLabel('1000')] # TODO: Add dynamic stacks
+
+
+        #self.bg = QPixmap('Files/table.png')
+        #self.setBackgroundBrush(QBrush(self.bg))
+
+        raise_amount = 0
+
 
         self.slider = QSlider(Qt.Horizontal)
         self.slider.setMinimum(0)
         self.slider.setMaximum(1000) # TODO: Add current player stack
         self.slider.setValue(0)
-
+        self.setLayout(layout)
 
 player1 = Player('Frida', 1000)
 player2 = Player('Lucas', 1000)
 
-app = QApplication([])
-table_scene = TableScene()
 
-content = QWidget()
-#table_scene.addWidget(content)
-table_scene.addEllipse(10,10,10,10)
-
-okbutton = QPushButton("OK")
-cbutton = QPushButton("Cancel")
-
-hbox = QHBoxLayout()
-hbox.addWidget(okbutton)
-hbox.addWidget(cbutton)
-
-content.setLayout(hbox)
-#content.setGeometry(300, 300, 300, 300)
-
-
-view = QGraphicsView(table_scene)
+qt_app = QApplication.instance()
+view = GameView()
 view.show()
-
-
-# layout = QHBoxLayout()
-
-
-# button = QPushButton("Klicka på mig")
-# layout.addWidget(button)
-# layout.addWidget(QLabel("Test"))
-# #table_scene.addWidget(button)
-# #table_scene.addText("Welcome to our pokergame")
-#
-#
-# gameView = QGraphicsView(table_scene)
-# gameView.show()
-
-
-# window.setLayout(layout)
-# window.show()
-app.exec()
-
+qt_app.exec()
 
 # game = GameView()
