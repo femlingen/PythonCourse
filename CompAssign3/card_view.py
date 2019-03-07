@@ -9,7 +9,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtSvg import *
 from PyQt5.QtWidgets import *
 import sys
-import CompAssign3.cardlib
+from CompAssign3.cardlib import *
 #import pycards as pc
 
 # NOTE: This is just given as an example of how to use CardView.
@@ -86,7 +86,7 @@ class CardView(QGraphicsView):
             # The ID of the card in the dictionary of images is a tuple with (value, suit), both integers
             # TODO: YOU MUST CORRECT THE EXPRESSION TO MATCH YOUR PLAYING CARDS!!!
             # TODO: See the __read_cards method for what mapping are used.
-            graphics_key = (card.value, card.suit)
+            graphics_key = (card.value, card.suit.value)
             renderer = self.back_card if self.model.flipped(i) else self.all_cards[graphics_key]
             c = CardItem(renderer, i)
 
@@ -100,7 +100,7 @@ class CardView(QGraphicsView):
             # Place the cards on the default positions
             c.setPos(c.position * self.card_spacing, 0)
             # Sets the opacity of cards if they are marked.
-            c.setOpacity(0.5 if self.model.marked(c.position) else 1.0)
+            #c.setOpacity(0.5 if self.model.marked(c.position) else 1.0)
             self.scene.addItem(c)
 
         self.update_view()
@@ -144,13 +144,13 @@ class MySimpleCard:
 
 
 # You have made a class similar to this (hopefully):
-class Hand:
-    def __init__(self):
-        # Lets use some hardcoded values for most of this to start with
-        self.cards = [MySimpleCard(13, 2), MySimpleCard(7, 0), MySimpleCard(13, 1)]
-
-    def add_card(self, card):
-        self.cards.append(card)
+# class Hand:
+#     def __init__(self):
+#         # Lets use some hardcoded values for most of this to start with
+#         self.cards = [MySimpleCard(13, 2), MySimpleCard(7, 0), MySimpleCard(13, 1)]
+#
+#     def add_card(self, card):
+#         self.cards.append(card)
 
 
 # We can extend this class to create a model, which updates the view whenever it has changed.
@@ -165,7 +165,7 @@ class HandModel(Hand, QObject):
         QObject.__init__(self)
 
         # Additional state needed by the UI, keeping track of the selected cards:
-        self.marked_cards = [False]*len(self.cards)
+        #self.marked_cards = [False]*len(self.cards)
         self.flipped_cards = True
 
     def flip(self):
@@ -173,8 +173,8 @@ class HandModel(Hand, QObject):
         self.flipped_cards = not self.flipped_cards
         self.data_changed.emit()
 
-    def marked(self, i):
-        return self.marked_cards[i]
+    #def marked(self, i):
+        #return self.marked_cards[i]
 
     def flipped(self, i):
         # This model only flips all or no cards, so we don't care about the index.
@@ -183,7 +183,7 @@ class HandModel(Hand, QObject):
 
     def clicked_position(self, i):
         # Mark the card as position "i" to be thrown away
-        self.marked_cards[i] = not self.marked_cards[i]
+        #self.marked_cards[i] = not self.marked_cards[i]
         self.data_changed.emit()
 
     def add_card(self, card):
@@ -193,16 +193,17 @@ class HandModel(Hand, QObject):
 
 
 # # Lets test it out
-# app = QApplication(sys.argv)
-# hand = HandModel()
+#app = QApplication(sys.argv)
+#hand = HandModel()
 #
-# card_view = CardView(hand)
+
 #
 # # Creating a small demo window to work with, and put the card_view inside:
-# box = QVBoxLayout()
-# box.addWidget(card_view)
-# player_view = QGroupBox("Player 1")
-# player_view.setLayout(box)
-# player_view.show()
-#
-# app.exec_()
+#card_view = CardView(hand)
+#box = QVBoxLayout()
+#box.addWidget(card_view)
+#player_view = QGroupBox("Player 1")
+#player_view.setLayout(box)
+#player_view.show()
+
+#app.exec_()

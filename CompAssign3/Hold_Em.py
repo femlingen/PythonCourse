@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
 from CompAssign3.cardlib import *
 import sys
-import CompAssign3.card_view
+from CompAssign3.card_view import *
 
 class Player(Hand):
     def __init__(self, player_name, player_stack):
@@ -45,15 +45,19 @@ class TotalPlayerView(QGroupBox):
         self.setLayout(self.layout)
 
 class TableCardsView(QGroupBox):
-    def __init__(self):
+    def __init__(self, table_hand: Hand):
         super().__init__()
 
-
+        box = QVBoxLayout()
+        card_view = CardView(table_hand)
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(card_view)
+        self.setLayout(self.layout)
 
 class BetView(QGroupBox):
     def __init__(self):
         super().__init__()
-        buttons = [QPushButton('Raise'), QPushButton('Check/Fold'), QPushButton('Fold')]
+        buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
         self.layout = QHBoxLayout(central)
         self.layout.addWidget(QLineEdit('0'))
         for button in buttons:
@@ -109,6 +113,18 @@ class GameView(QGroupBox):
         self.setLayout(layout)
 
 
+
+### Skapa en hand för bordet endast test
+deck = StandardDeck()
+deck.shuffle_cards()
+table_hand = HandModel()
+table_hand.add_card(deck.deal_card())
+table_hand.add_card(deck.deal_card())
+table_hand.add_card(deck.deal_card())
+table_hand.add_card(deck.deal_card())
+table_hand.add_card(deck.deal_card())
+###
+
 app = QApplication(sys.argv)
 
  # TODO: Add to main class instead
@@ -116,9 +132,11 @@ widget = QMainWindow()
 central = QWidget()
 widget.setCentralWidget(central)
 botview = BotView()
-hlayout = QVBoxLayout(central)
+vlayout = QVBoxLayout(central)
 betview = BetView()
-hlayout.addWidget(botview)
+asd = TableCardsView(table_hand)
+vlayout.addWidget(asd)
+vlayout.addWidget(botview)
 
 #widget.setGeometry(500, 500, 500, 500)
 widget.show()
