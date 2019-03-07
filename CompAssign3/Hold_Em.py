@@ -3,8 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
 from CompAssign3.cardlib import *
-import sys
-from CompAssign3.card_view import *
+
 
 class Player(Hand):
     def __init__(self, player_name, player_stack):
@@ -12,134 +11,135 @@ class Player(Hand):
         self.name = player_name
         self.stack = player_stack
 
-
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
 
 
-
-
-
-class PlayerView(QGroupBox):
-
-    def __init__(self, player): #TODO: Add dynamic player names and stacks
-        super().__init__()
-        self.namelabel = QLabel(player.name)
-        self.stacklabel = QLabel(str(player.stack))
-        # TODO: Add and also to layout self.playercards = CardView(player.hand)
-        self.layout = QVBoxLayout()
-        self.layout.addWidget(self.namelabel)
-        self.layout.addWidget(self.stacklabel)
-        self.setLayout(self.layout)
-        # TODO: Add the player cards to layout self.layout.addWidget(self.playercards)
-
-
-class TotalPlayerView(QGroupBox):
-
-    def __init__(self, players):
-        super().__init__()
-        self.layout = QVBoxLayout()
-        for player in players:
-            self.layout.addWidget(PlayerView(player))
-        self.setLayout(self.layout)
-
-class TableCardsView(QGroupBox):
-    def __init__(self, table_hand: Hand):
-        super().__init__()
-
-        box = QVBoxLayout()
-        card_view = CardView(table_hand)
-        self.layout = QHBoxLayout()
-        self.layout.addWidget(card_view)
-        self.setLayout(self.layout)
-
-class BetView(QGroupBox):
+class TableScene(QGraphicsScene):
+    """ A TableScene class ...  """ # TODO
     def __init__(self):
         super().__init__()
-        buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
-        self.layout = QHBoxLayout(central)
-        self.layout.addWidget(QLineEdit('0'))
-        for button in buttons:
-            self.layout.addWidget(button)
+        self.tile = QPixmap('Files/table.png')
+        self.setBackgroundBrush(QBrush(self.tile))
 
 
-        self.slider = QSlider(Qt.Horizontal) # TODO: Remove or add (Depending on time)
-        self.slider.setMinimum(0)
-        self.slider.setMaximum(1000)  # TODO: Add current player stack
-        self.slider.setValue(0)
-        self.setLayout(self.layout)
-
-
-
-class BotView(QGroupBox):
-    def __init__(self):
+class CardSvgItem(QGraphicsSvgItem):
+    """ A simple overloaded QGraphicsSvgItem that also stores the card position """
+    def __init__(self, renderer, id):
         super().__init__()
-        players = []
-        players.append(Player('Lucas', 1000))
-        players.append(Player('Frida', 1000))
-        player_views = TotalPlayerView(players)
-        self.layout = QHBoxLayout()
-        self.layout.addWidget(BetView())
-        self.layout.addWidget(player_views)
-        self.setLayout(self.layout)
+        self.setSharedRenderer(renderer)
+        self.position = id
 
 
-class TopView(QGroupBox): # TODO: Fix all cards and pot added in this layout
+class CardView(QGraphicsView):
+    """ A CardView class ... """ # TODO
+    def __read_cards():
+        all_cards = dict()
+        for suit in 'HDSC':
+            for value in ['2','3','4','5','6','7','8','9','10','J','Q','K','A']:
+                file = value + suit
+                all_cards[file] = QSvgRenderer('Files/cards/' + file + '.svg')
+        return all_cards
+    back_card = QSvgRenderer('Files/cards/Red_Back.svg')
+    all_cards = __read_cards()
 
-    def __init__(self):
-        super().__init__()
-        self.layout = QHBoxLayout()
-        table_cards = TableCardsView() # Fix tablecardsview
 
-
-
-class GameView(QGroupBox):
+class GameView(QWidget):
     def __init__(self):  # TODO: Add game_model, game_players ?
-        super().__init__()
-
-        # self.players = players TODO: Add when players are back
-
+        super().__init__(self)
+        layout = QVBoxLayout() # yttersta boxen
+        first_vbox = QHBoxLayout()
+        second_vbox = QHBoxLayout()
+        layout.addLayout(first_vbox)
+        layout.addLayout(second_vbox)
 
         players_hbox = QHBoxLayout()
+        player_name_labels = [QLabel('Spelare 1'), QLabel('Spelare 2')] # TODO: Add dynamic player names
+        player_stack_labels = [QLabel(1000), QLabel(1000)] # TODO: Add dynamic stacks
+        players_hbox.addWidget()
 
-
-
-        #self.bg = QPixmap('Files/table.png')
-        #self.setBackgroundBrush(QBrush(self.bg))
+        self.bg = QPixmap('Files/table.png')
+        self.setBackgroundBrush(QBrush(self.bg))
 
         raise_amount = 0
+        #self.players = players TODO: Add when players are back
 
-        self.setLayout(layout)
+        self.buttons = [QPushButton('Raise'), QPushButton('Check/Fold'), QPushButton('Fold')]
+
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(1000) # TODO: Add current player stack
+        self.slider.setValue(0)
 
 
 
-### Skapa en hand för bordet endast test
-deck = StandardDeck()
-deck.shuffle_cards()
-table_hand = HandModel()
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-###
 
-app = QApplication(sys.argv)
+# TODO: playermodel
+# TODO: handmodel
+# TODO: tablemodel
+# TODO: playerview
+# TODO: game board view
 
- # TODO: Add to main class instead
-widget = QMainWindow()
-central = QWidget()
-widget.setCentralWidget(central)
-botview = BotView()
-vlayout = QVBoxLayout(central)
-betview = BetView()
-asd = TableCardsView(table_hand)
-vlayout.addWidget(asd)
-vlayout.addWidget(botview)
+player1 = Player('Frida', 1000)
+player2 = Player('Lucas', 1000)
 
-#widget.setGeometry(500, 500, 500, 500)
-widget.show()
 
-sys.exit(app.exec_())
+app = QApplication([])
+
+table_scene = TableScene()
+
+content = QWidget()
+table_scene.addWidget(content)
+
+# Button
+cancel_button = QPushButton("End Game")
+fold_button = QPushButton("Fold")
+check_button = QPushButton("Check")
+check_fold_button = QPushButton("Check/fold")
+call_any_button = QPushButton("Call Any")
+raise_button = QPushButton("Raise")
+
+
+# Card section
+table_cards_hbox = QHBoxLayout()
+table_cards_hbox.addWidget(QLabel("Card"))
+
+# Button section
+button_hbox = QHBoxLayout()
+button_hbox.addWidget(fold_button)
+button_hbox.addWidget(check_button)
+button_hbox.addWidget(check_fold_button)
+button_hbox.addWidget(call_any_button)
+button_hbox.addWidget(raise_button)
+button_hbox.addWidget(cancel_button)
+
+
+content.setLayout(button_hbox)
+#content.setGeometry(300, 300, 300, 300)
+
+
+view = QGraphicsView(table_scene)
+view.show()
+
+
+# layout = QHBoxLayout()
+
+
+# button = QPushButton("Klicka på mig")
+# layout.addWidget(button)
+# layout.addWidget(QLabel("Test"))
+# #table_scene.addWidget(button)
+# #table_scene.addText("Welcome to our pokergame")
+#
+#
+# gameView = QGraphicsView(table_scene)
+# gameView.show()
+
+
+# window.setLayout(layout)
+# window.show()
+app.exec()
+
+
 # game = GameView()
