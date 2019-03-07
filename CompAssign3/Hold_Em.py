@@ -3,7 +3,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
 from CompAssign3.cardlib import *
-
+import sys
+import CompAssign3.card_view
 
 class Player(Hand):
     def __init__(self, player_name, player_stack):
@@ -17,49 +18,31 @@ class Player(Hand):
 # other events from the window system, and paints a representation of itself on the screen.
 
 
-class TableScene(QGraphicsScene):
-    """ A TableScene class ...  """ # TODO
-    def __init__(self):
-        super().__init__()
-        self.tile = QPixmap('Files/table.png')
-        self.setBackgroundBrush(QBrush(self.tile))
 
-
-class CardSvgItem(QGraphicsSvgItem):
-    """ A simple overloaded QGraphicsSvgItem that also stores the card position """
-    def __init__(self, renderer, id):
-        super().__init__()
-        self.setSharedRenderer(renderer)
-        self.position = id
-
-
-class CardView(QGraphicsView):
-    """ A CardView class ... """ # TODO
-    def __read_cards():
-        all_cards = dict()
-        for suit in 'HDSC':
-            for value in ['2','3','4','5','6','7','8','9','10','J','Q','K','A']:
-                file = value + suit
-                all_cards[file] = QSvgRenderer('Files/cards/' + file + '.svg')
-        return all_cards
-    back_card = QSvgRenderer('Files/cards/Red_Back.svg')
-    all_cards = __read_cards()
 
 
 class PlayerView(QGroupBox):
 
-    def __init__(self, player):
+    def __init__(self, player): #TODO: Add dynamic player names and stacks
         super().__init__()
         self.namelabel = QLabel(player.name)
-        self.stacklabel = QLabel(player.stack)
-        self.playercards = CardView(player.hand)
+        self.stacklabel = QLabel(str(player.stack))
+        # TODO: Add and also to layout self.playercards = CardView(player.hand)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.namelabel)
+        self.layout.addWidget(self.stacklabel)
+        self.setLayout(self.layout)
+        # TODO: Add the player cards to layout self.layout.addWidget(self.playercards)
 
 
 class TotalPlayerView(QGroupBox):
 
-    def __init__(self):
+    def __init__(self, players):
         super().__init__()
-
+        self.layout = QVBoxLayout()
+        for player in players:
+            self.layout.addWidget(PlayerView(player))
+        self.setLayout(self.layout)
 
 class TableCardsView(QGroupBox):
     def __init__(self):
@@ -67,11 +50,43 @@ class TableCardsView(QGroupBox):
 
 
 
-
-class TopView(QGroupBox):
+class BetView(QGroupBox):
     def __init__(self):
         super().__init__()
+        buttons = [QPushButton('Raise'), QPushButton('Check/Fold'), QPushButton('Fold')]
+        self.layout = QHBoxLayout(central)
+        self.layout.addWidget(QLineEdit('0'))
+        for button in buttons:
+            self.layout.addWidget(button)
 
+
+        self.slider = QSlider(Qt.Horizontal) # TODO: Remove or add (Depending on time)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(1000)  # TODO: Add current player stack
+        self.slider.setValue(0)
+        self.setLayout(self.layout)
+
+
+
+class BotView(QGroupBox):
+    def __init__(self):
+        super().__init__()
+        players = []
+        players.append(Player('Lucas', 1000))
+        players.append(Player('Frida', 1000))
+        player_views = TotalPlayerView(players)
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(BetView())
+        self.layout.addWidget(player_views)
+        self.setLayout(self.layout)
+
+
+class TopView(QGroupBox): # TODO: Fix all cards and pot added in this layout
+
+    def __init__(self):
+        super().__init__()
+        self.layout = QHBoxLayout()
+        table_cards = TableCardsView() # Fix tablecardsview
 
 
 
@@ -81,10 +96,9 @@ class GameView(QGroupBox):
 
         # self.players = players TODO: Add when players are back
 
-        self.buttons = [QPushButton('Raise'), QPushButton('Check/Fold'), QPushButton('Fold')]
+
         players_hbox = QHBoxLayout()
-        player_name_labels = [QLabel('Spelare 1'), QLabel('Spelare 2')] # TODO: Add dynamic player names
-        player_stack_labels = [QLabel('1000'), QLabel('1000')] # TODO: Add dynamic stacks
+
 
 
         #self.bg = QPixmap('Files/table.png')
@@ -92,20 +106,22 @@ class GameView(QGroupBox):
 
         raise_amount = 0
 
-
-        self.slider = QSlider(Qt.Horizontal)
-        self.slider.setMinimum(0)
-        self.slider.setMaximum(1000) # TODO: Add current player stack
-        self.slider.setValue(0)
         self.setLayout(layout)
 
-player1 = Player('Frida', 1000)
-player2 = Player('Lucas', 1000)
 
+app = QApplication(sys.argv)
 
-qt_app = QApplication.instance()
-view = GameView()
-view.show()
-qt_app.exec()
+ # TODO: Add to main class instead
+widget = QMainWindow()
+central = QWidget()
+widget.setCentralWidget(central)
+botview = BotView()
+hlayout = QVBoxLayout(central)
+betview = BetView()
+hlayout.addWidget(botview)
 
+#widget.setGeometry(500, 500, 500, 500)
+widget.show()
+
+sys.exit(app.exec_())
 # game = GameView()
