@@ -42,6 +42,7 @@ class CardView(QGraphicsView):
         Reads all the 52 cards from files.
         :return: Dictionary of SVG renderers
         """
+
         all_cards = dict() # Dictionaries let us have convenient mappings between cards and their images
         for suit_file, suit in zip('HDSC', range(4)): # Check the order of the suits here!!!
             for value_file, value in zip(['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'], range(2, 15)):
@@ -191,19 +192,35 @@ class HandModel(Hand, QObject):
         self.data_changed.emit()
 
 
+# a method for restarting the game
 
-# # Lets test it out
-#app = QApplication(sys.argv)
-#hand = HandModel()
-#
 
-#
+# Lets test it out
+st_deck = StandardDeck()
+st_deck.shuffle_cards()
+app = QApplication(sys.argv)
+hand = HandModel()
+hand.add_card(st_deck.deal_card())
+hand.add_card(st_deck.deal_card())
+
+hand2 = HandModel()
+hand2.add_card(st_deck.deal_card())
+hand2.add_card(st_deck.deal_card())
+
+
+
 # # Creating a small demo window to work with, and put the card_view inside:
-#card_view = CardView(hand)
-#box = QVBoxLayout()
-#box.addWidget(card_view)
-#player_view = QGroupBox("Player 1")
-#player_view.setLayout(box)
-#player_view.show()
+card_view = CardView(hand)
+card_view2 = CardView(hand2)
 
-#app.exec_()
+box = QVBoxLayout()
+box.addWidget(card_view)
+box.addWidget(card_view2)
+
+player_view = QGroupBox("Players")
+player_view.setLayout(box)
+player_view.show()
+
+
+
+app.exec_()

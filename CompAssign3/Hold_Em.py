@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
 from CompAssign3.cardlib import *
+from CompAssign3.card_view import *
 
 
 class Player(Hand):
@@ -10,6 +11,9 @@ class Player(Hand):
         super().__init__()
         self.name = player_name
         self.stack = player_stack
+
+    def get_stack(self):
+        return self.stack
 
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
@@ -55,8 +59,8 @@ class GameView(QWidget):
         layout.addLayout(second_vbox)
 
         players_hbox = QHBoxLayout()
-        player_name_labels = [QLabel('Spelare 1'), QLabel('Spelare 2')] # TODO: Add dynamic player names
-        player_stack_labels = [QLabel(1000), QLabel(1000)] # TODO: Add dynamic stacks
+        player_name_labels = [QLabel(player1.name), QLabel(player2.name)] # TODO: Add dynamic player names
+        player_stack_labels = [QLabel(player1.stack), QLabel(player2.stack)] # TODO: Add dynamic stacks
         players_hbox.addWidget()
 
         self.bg = QPixmap('Files/table.png')
@@ -75,18 +79,69 @@ class GameView(QWidget):
 
 
 
+# MAYBE REMOVE Potmodel and Texasholdemmodel
+class PotModel:
+    new_value = pyqtSignal()
+
+    def __init__():
+        self.credits = 0
+
+    def __iadd__(self, value):
+        self.credits += value
+        self.new_value.emit()
+
+    def value(self):
+        return self._credits()
+
+    def clear(self):
+        self.credits = 0
+        self.new_value.emit()
+
+    def pot_view(QLabel):
+        def __init__(self, pot: PotModel):
+            self.pot = pot
+            self.pot.new: value.connect(lambda: self.setText('S()'.format(self.pot.value())))
+
+        def update_value(self):
+            self.setText('S()'.format(self.pot.value()))
+
+
+class TexasHoldEmModel:
+
+    def __init__(self, player_names, starting_credits = 100):
+        self.players = [Player(name, starting_credits) for name in player_names]
+        self.pot = PotModel()
+
+    def place_bet(self, amount):
+        self.players[self.active_player].place_bet(amount)  # this subtracts fom the players credits
+        self.pot += amount
+
+    def fold(self):
+        next_player = (self.active_player + 1 % len(self.players))
+        self.players[next_player].win(self.pot.value())
+        self.next_round()  # probably clear the deck, the player cards and create a new deck.
+
+
+    #def next_round():  # any sort of clean up we need here
+        #self.deck = StandardDeck()
+        #self.pot.clear()
+
+        #self.active_player = (self_player)
+        #self.new_active_player.emit()  # always call for emit-signal
+
+
+# TODO: Potmodel
 # TODO: playermodel
 # TODO: handmodel
 # TODO: tablemodel
 # TODO: playerview
 # TODO: game board view
+# TODO: restart function
 
 player1 = Player('Frida', 1000)
 player2 = Player('Lucas', 1000)
 
-
 app = QApplication([])
-
 table_scene = TableScene()
 
 content = QWidget()
@@ -123,23 +178,14 @@ view = QGraphicsView(table_scene)
 view.show()
 
 
-# layout = QHBoxLayout()
-
-
-# button = QPushButton("Klicka på mig")
-# layout.addWidget(button)
-# layout.addWidget(QLabel("Test"))
-# #table_scene.addWidget(button)
-# #table_scene.addText("Welcome to our pokergame")
-#
-#
-# gameView = QGraphicsView(table_scene)
-# gameView.show()
-
-
-# window.setLayout(layout)
-# window.show()
 app.exec()
 
 
 # game = GameView()
+
+
+# Kör en gameview som innehåller komponenter så som
+# PlayerView
+# TableCardView
+# Button panel
+# GameModel

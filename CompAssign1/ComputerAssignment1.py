@@ -7,7 +7,6 @@ import math
 import time
 from scipy.spatial import cKDTree
 
-
 """ This is an assignment in course Object Oriented Programming in Python - DAT171 """
 __author__ = "Lucas Jutvik & Frida Femling"
 
@@ -36,15 +35,22 @@ def read_coordinate_file(filename):
 
     long_lat_list = []
     with open(filename, 'r') as file:
-        line = file.readline()
-        while line:
+        for line in file:
             long_lat_list.append([float(i) for i in (line.strip('{}\n').split(','))])
-            line = file.readline()
         x_y_cord = np.array(long_lat_list)
         x_y_cord[:, 1] *= R * PIE / 180
         x_y_cord[:, 0] = R * np.log(np.tan(PIE * (1 / 4 + x_y_cord[:, 0] / 360)))
-        # Measuring distances on a Mercator projection isn’t very accurate, but will suffice for this task
+            # Measuring distances on a Mercator projection isn’t very accurate, but will suffice for this task
         return np.flip(x_y_cord, axis=1)
+        # line = file.readline()
+        # while line:
+        #     long_lat_list.append([float(i) for i in (line.strip('{}\n').split(','))])
+        #     line = file.readline()
+        # x_y_cord = np.array(long_lat_list)
+        # x_y_cord[:, 1] *= R * PIE / 180
+        # x_y_cord[:, 0] = R * np.log(np.tan(PIE * (1 / 4 + x_y_cord[:, 0] / 360)))
+        # # Measuring distances on a Mercator projection isn’t very accurate, but will suffice for this task
+        # return np.flip(x_y_cord, axis=1)
 
 
 # --- Task 2, 5 & 8 --- Write the function  plot_points(coord_list)  which plots the data points read from the file
@@ -58,26 +64,15 @@ def plot_points(coord_list, indices, path):
     :param path: the cheapest path (list of indices
     list of ints and floats
     """
-    c = coord_list
-    lc_list = []
-    cheapest_path = []
-
-    # Following code uses a loop and adds all neighbouring cities to list
-    for city in indices:
-        lc_list.append([[c[int(city[0]), 0], c[int(city[0]), 1]], [c[int(city[1]), 0], c[int(city[1]), 1]]])
-
-    # Following code uses a loop and adds the cheapest path to list
-    for g in range(0, len(path) - 1):
-        h = g + 1
-        cheapest_path.append([[c[path[g], 0], c[path[g], 1]], [c[path[h], 0], c[path[h], 1]]])
+    lc_list = coord_list[indices]
 
     line_segment = LineCollection(lc_list, linewidths=0.2)
-    line_segment2 = LineCollection(cheapest_path, linewidths=0.5, colors='red')
+
     fig = plt.figure()
     plt.plot(coord_list[:, 0], coord_list[:, 1], 'dk', markersize=0.3)
+    plt.plot(coord_list[path, 0], coord_list[path, 1], linewidth=0.5, color='red')
     ax = fig.gca()
     ax.add_collection(line_segment)
-    ax.add_collection(line_segment2)
     plt.axis('equal')
     plt.show()
 
@@ -93,15 +88,17 @@ def construct_graph_connections(coord_list, radius):
     :type
     All variables should be ints
     """
-    indices_cost_list = []
+    index_list = []
+    cost_list = []
     for i1, cord in enumerate(coord_list):
         for i2, cord2 in enumerate(coord_list[(i1 + 1)::], start=(i1 + 1)):
             dist = math.sqrt((cord[0] - cord2[0]) ** 2 + (cord[1] - cord2[1]) ** 2)
             if dist <= radius:
-                indices_cost_list.append([i1, i2, dist ** (9 / 10)])
+                index_list.append([i1, i2])
+                cost_list.append(dist ** (9 / 10))
+    new_index_list = np.array(index_list)
 
-    output = np.array(indices_cost_list)
-    return output[:, 0:2], output[:, 2]
+    return new_index_list, np.array(cost_list)
 
 
 # --- Task 4 --- Create the function  construct_graph(indices, costs, N)
@@ -121,7 +118,8 @@ def construct_graph(indices, cost, n):
     Indices and N should be ints
     cost can be int or float
     """
-    csr_values = csr_matrix((cost, (indices[:, 0], indices[:, 1])), shape=(n, n))
+    csr_values = csr_matrix((cost, indices.T), shape=(n, n))
+    # By translation of the indices we send them in with the right format and won't have to split them up
     return csr_values
 
 
@@ -142,7 +140,7 @@ def compute_path(predecessor_matrix, start_node, end_node):
     """
     cities = [end_node]
     while cities[-1] != start_node:  # iterating from the last city to the start node to find the path
-        cities.append(predecessor_matrix[0][cities[-1]])
+        cities.append(predecessor_matrix[cities[-1]])
     path = np.array(cities)
     return np.flip(path, axis=0)
 
@@ -161,15 +159,18 @@ def construct_fast_graph_connections(coord_list, radius):
     """
     c_l = coord_list
     coord_tree = cKDTree(c_l)
-    coord_pair = coord_tree.query_ball_point(c_l, radius)
-    output = []
-    for i1, list_object in enumerate(coord_pair):
-        for ele in list_object:
-            if ele > i1:
-                dist = math.sqrt((c_l[i1, 0] - c_l[ele, 0]) ** 2 + (c_l[i1, 1] - c_l[ele, 1]) ** 2)
-                output.append([i1, ele, dist ** (9 / 10)])
-    output = np.array(output)
-    return output[:, 0:2], output[:, 2]
+    all_neighbours = coord_tree.query_ball_point(c_l, radius)
+    index_list = []
+    cost_list = []
+    for i1, neighbours in enumerate(all_neighbours):
+        for i2 in neighbours:
+            if i2 > i1:
+                dist = math.sqrt((c_l[i1, 0] - c_l[i2, 0]) ** 2 + (c_l[i1, 1] - c_l[i2, 1]) ** 2)
+                index_list.append([i1, i2])
+                cost_list.append(dist ** (9 / 10))
+    index_list = np.array(index_list)
+    cost_list = np.array(cost_list)
+    return index_list, cost_list
 
 
 # Testing function Task 1
@@ -184,7 +185,7 @@ time_list.append(elapsed_time)
 
 
 # Testing function Task 3
-connected, city_cost = construct_fast_graph_connections(coordinates_list, radius_list[country])  # construct the
+connected, city_cost = construct_graph_connections(coordinates_list, radius_list[country])  # construct the
 # connections between nodes
 
 # Testing function Task 4
@@ -207,9 +208,12 @@ Returns: Returns a list with the cost from each specific city with regards to st
 """
 
 total_cost_list, predecessor = csgraph.dijkstra(
-    csgraph=csr_matrice, indices=[start_nodes[country]], return_predecessors=True, directed=False)
+    csgraph=csr_matrice, indices=start_nodes[country], return_predecessors=True, directed=False)
 
 path_cheapest = compute_path(predecessor, start_nodes[country], end_nodes[country])
 
-total_cost = total_cost_list[0][end_nodes[country]]
+total_cost = total_cost_list[end_nodes[country]]
 plot_points(coordinates_list, connected, path_cheapest)
+
+print('The cheapest route is the following: \n{}'.format(path_cheapest))
+print('The total cost ammounts to: {}'.format(total_cost))
