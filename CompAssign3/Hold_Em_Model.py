@@ -31,11 +31,39 @@ class PotModel(QObject):
         self.new_value.emit()
 
 
+class BetModel(QObject):
+    bet_signal = pyqtSignal()
+
+    def __init__(self, gamestate):
+        super().__init__()
+        self.gamestate = gamestate
+
+    def fold(self):
+        for player in self.gamestate.playermodel.players:
+            if player.active_player == False:
+                # TODO: tilldela pot
+                pass
+        self.bet_signal.emit()
+
+    def raise_bet(self):
+        # TODO: horisontal slider with min value = 0 and max value player.stack
+        # raise
+        # change active player
+        pass
+
+    def check_or_call(self):
+
+        # change stack amount om man callar
+        # change active player
+        pass
+
+
 class Player(Hand):
     def __init__(self, player_name, player_stack, deck):
         super().__init__()
         self.name = player_name
         self.stack = player_stack
+        self.active_player = False
         self.hand_model = HandModel()
         self.hand_model.add_card(deck.deal_card())
         self.hand_model.add_card(deck.deal_card())
@@ -61,6 +89,13 @@ class GameState(QObject):
         self.pot = PotModel()
         for i in range(0, 5):
             self.table_hand.add_card(self.deck.deal_card())
+
+    def restart_game(self):
+        pass
+        # do shit
+        # kallar på spelare - nya kort
+        # kallar på bordet - nya kort
+        # emit-funktion som uppdaterar game view
 
 
 # metod  playmessage (str)
