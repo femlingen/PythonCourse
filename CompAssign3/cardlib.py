@@ -40,10 +40,10 @@ class Suit(Enum):
     """
     A class for avoiding mistakes while using suits
     """
-    hearts = 0
-    diamonds = 1
-    spades = 2
-    clubs = 3
+    clubs = 0
+    spades = 1
+    diamonds = 2
+    hearts = 3
 
     def __repr__(self):
         return self.name.capitalize()
@@ -61,7 +61,7 @@ class NumberedCard(PlayingCard):
         super().__init__(suit)  # goes down to PlayingCard-class to fetch PlayingCard
         self.value = value
 
-    def value(self):
+    def get_value(self):
         return self.value
 
     def __str__(self):
@@ -75,17 +75,14 @@ class AceCard(PlayingCard):
     """
     A class for making Ace cards
     """
-    def __init__(self, suit):
-        super().__init__(suit)
-        self.value = 14
-    #
-    # @staticmethod
-    # def value():
-    #     """
-    #
-    #     :return: The cards value
-    #     """
-    #     return 14
+
+    @staticmethod
+    def get_value():
+        """
+
+        :return: The cards value
+        """
+        return 14
 
     def __str__(self):
         return 'Ace of {}'.format(self.suit)
@@ -98,17 +95,14 @@ class JackCard(PlayingCard):
     """
     A class for making Jack cards
     """
-    def __init__(self, suit):
-        super().__init__(suit)
-        self.value = 11
 
-    # @staticmethod
-    # def value():
-    #     """
-    #
-    #     :return: The cards value
-    #     """
-    #     return 11
+    @staticmethod
+    def get_value():
+        """
+
+        :return: The cards value
+        """
+        return 11
 
     def __str__(self):
         return 'Jack of {}'.format(self.suit)
@@ -121,17 +115,12 @@ class QueenCard(PlayingCard):
     """
     A class for making Queen cards
     """
-
-    def __init__(self, suit):
-        super().__init__(suit)
-        self.value = 12
-
-    # @staticmethod
-    # def value():
-    #     """
-    #     :return: The cards value
-    #     """
-    #     return 12
+    @staticmethod
+    def get_value():
+        """
+        :return: The cards value
+        """
+        return 12
 
     def __str__(self):
         return 'Queen of {}'.format(self.suit)
@@ -144,17 +133,13 @@ class KingCard(PlayingCard):
     """
     A class for making King cards
     """
-    def __init__(self, suit):
-        super().__init__(suit)
-        self.value = 13
+    @staticmethod
+    def get_value():
+        """
 
-    # @staticmethod
-    # def value():
-    #     """
-    #
-    #     :return: The cards value
-    #     """
-    #     return 13
+        :return: The cards value
+        """
+        return 13
 
     def __str__(self):
         return 'King of {}'.format(self.suit)
