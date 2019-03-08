@@ -62,7 +62,7 @@ class BetView(QGroupBox):
     def __init__(self):
         super().__init__()
         buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
-        self.layout = QHBoxLayout(central)
+        self.layout = QHBoxLayout()
         self.layout.addWidget(QLineEdit('0'))
         for button in buttons:
             self.layout.addWidget(button)
@@ -93,9 +93,9 @@ class TopView(QGroupBox):  # TODO: Fix all cards and pot added in this layout
 
 class PlayerState(QObject):
     def __init__(self, deck):
-        players = []
-        players.append(Player('Lucas', 1000, deck))
-        players.append(Player('Frida', 1000, deck))
+        self.players = []
+        self.players.append(Player('Lucas', 1000, deck))
+        self.players.append(Player('Frida', 1000, deck))
 
 class GameState(QObject):
     def __init__(self):
@@ -103,7 +103,7 @@ class GameState(QObject):
         self.deck.shuffle_cards()
         self.table_hand = HandModel()
         self.pot = 0
-        for i in range(1, 5):
+        for i in range(0, 5):
             self.table_hand.add_card(self.deck.deal_card())
 
 
@@ -112,12 +112,13 @@ class GameState(QObject):
 class GameModell(QObject):
 
     def __init__(self):
+        super().__init__()
         self.deck = StandardDeck()
         self.deck.shuffle_cards()
-        self.players = PlayerState(self.deck)
+        self.playermodel = PlayerState(self.deck)
         self.gamestate = GameState()
         self.tablelayout = TableCardsView(self.gamestate.table_hand)
-        self.playerlayout = BotView(self.players)
+        self.playerlayout = BotView(self.playermodel.players)
 
 
 
@@ -131,7 +132,7 @@ class GameView(QWidget):
         self.vlayout = QVBoxLayout(self.central)
         self.vlayout.addWidget(self.game_modell.tablelayout)
         self.vlayout.addWidget(self.game_modell.playerlayout)
-
+        self.setLayout(self.vlayout)
         self.show()
 
 
