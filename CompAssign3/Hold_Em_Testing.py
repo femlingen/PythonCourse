@@ -23,11 +23,10 @@ class Player(Hand):
 
 
 class PlayerView(QGroupBox):
-    def __init__(self, player):  # TODO: Add dynamic player names and stacks
+    def __init__(self, player):
         super().__init__()
-        self.namelabel = QLabel(player.name)
+        self.namelabel = QLabel(player.name) # TODO: hitta något sätt att ändra stacken på
         self.stacklabel = QLabel(str(player.stack))
-        # TODO: Add and also to layout self.playercards = CardView(player.hand)
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.namelabel)
         self.layout.addWidget(self.stacklabel)
