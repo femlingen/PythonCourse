@@ -72,7 +72,7 @@ class BetView(QGroupBox):
         self.setLayout(self.layout)
 
 
-class BotView(QGroupBox):
+class BottomView(QGroupBox):
     def __init__(self, players):
         super().__init__()
         player_views = TotalPlayerView(players)
@@ -116,7 +116,7 @@ class GameModel(QObject):
         self.playermodel = PlayerState(self.deck)
         self.gamestate = GameState()
         self.tablelayout = TableCardsView(self.gamestate.table_hand)
-        self.playerlayout = BotView(self.playermodel.players)
+        self.playerlayout = BottomView(self.playermodel.players)
 
 
 class GameView(QWidget):
@@ -125,14 +125,12 @@ class GameView(QWidget):
         self.widget = QMainWindow()
         self.central = QWidget()
         self.widget.setCentralWidget(self.central)
-        self.game_modell = GameModel()
+        self.game_model = GameModel()
         self.vlayout = QVBoxLayout(self.central)
-        self.vlayout.addWidget(self.game_modell.tablelayout)
-        self.vlayout.addWidget(self.game_modell.playerlayout)
+        self.vlayout.addWidget(self.game_model.tablelayout)
+        self.vlayout.addWidget(self.game_model.playerlayout)
         self.setLayout(self.vlayout)
         self.show()
-
-
 
 
 app = QApplication(sys.argv)
