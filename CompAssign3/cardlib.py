@@ -61,7 +61,7 @@ class NumberedCard(PlayingCard):
         super().__init__(suit)  # goes down to PlayingCard-class to fetch PlayingCard
         self.value = value
 
-    def value(self):
+    def get_value(self):
         return self.value
 
     def __str__(self):
@@ -77,7 +77,7 @@ class AceCard(PlayingCard):
     """
 
     @staticmethod
-    def value():
+    def get_value():
         """
 
         :return: The cards value
@@ -97,7 +97,7 @@ class JackCard(PlayingCard):
     """
 
     @staticmethod
-    def value():
+    def get_value():
         """
 
         :return: The cards value
@@ -116,7 +116,7 @@ class QueenCard(PlayingCard):
     A class for making Queen cards
     """
     @staticmethod
-    def value():
+    def get_value():
         """
         :return: The cards value
         """
@@ -134,7 +134,7 @@ class KingCard(PlayingCard):
     A class for making King cards
     """
     @staticmethod
-    def value():
+    def get_value():
         """
 
         :return: The cards value

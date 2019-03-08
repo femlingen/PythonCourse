@@ -6,8 +6,9 @@ from CompAssign3.cardlib import *
 import sys
 from CompAssign3.card_view import *
 
+
 class Player(Hand):
-    def __init__(self, player_name, player_stack):
+    def __init__(self, player_name, player_stack, deck):
         super().__init__()
         self.name = player_name
         self.stack = player_stack
@@ -21,12 +22,9 @@ class Player(Hand):
 # other events from the window system, and paints a representation of itself on the screen.
 
 
-
-
-
 class PlayerView(QGroupBox):
 
-    def __init__(self, player): #TODO: Add dynamic player names and stacks
+    def __init__(self, player):  # TODO: Add dynamic player names and stacks
         super().__init__()
         self.namelabel = QLabel(player.name)
         self.stacklabel = QLabel(str(player.stack))
@@ -48,6 +46,7 @@ class TotalPlayerView(QGroupBox):
             self.layout.addWidget(PlayerView(player))
         self.setLayout(self.layout)
 
+
 class TableCardsView(QGroupBox):
     def __init__(self, table_hand: Hand):
         super().__init__()
@@ -58,6 +57,7 @@ class TableCardsView(QGroupBox):
         self.layout.addWidget(card_view)
         self.setLayout(self.layout)
 
+
 class BetView(QGroupBox):
     def __init__(self):
         super().__init__()
@@ -67,21 +67,16 @@ class BetView(QGroupBox):
         for button in buttons:
             self.layout.addWidget(button)
 
-
-        self.slider = QSlider(Qt.Horizontal) # TODO: Remove or add (Depending on time)
+        self.slider = QSlider(Qt.Horizontal)  # TODO: Remove or add (Depending on time)
         self.slider.setMinimum(0)
         self.slider.setMaximum(1000)  # TODO: Add current player stack
         self.slider.setValue(0)
         self.setLayout(self.layout)
 
 
-
 class BotView(QGroupBox):
-    def __init__(self):
+    def __init__(self, players):
         super().__init__()
-        players = []
-        players.append(Player('Lucas', 1000))
-        players.append(Player('Frida', 1000))
         player_views = TotalPlayerView(players)
         self.layout = QHBoxLayout()
         self.layout.addWidget(BetView())
@@ -89,69 +84,74 @@ class BotView(QGroupBox):
         self.setLayout(self.layout)
 
 
-class TopView(QGroupBox): # TODO: Fix all cards and pot added in this layout
+class TopView(QGroupBox):  # TODO: Fix all cards and pot added in this layout
 
     def __init__(self):
         super().__init__()
         self.layout = QHBoxLayout()
-        table_cards = TableCardsView() # Fix tablecardsview
+        table_cards = TableCardsView()  # Fix tablecardsview
+
+class PlayerState(QObject):
+    def __init__(self, deck):
+        players = []
+        players.append(Player('Lucas', 1000, deck))
+        players.append(Player('Frida', 1000, deck))
+
+class GameState(QObject):
+    def __init__(self):
+        self.deck = StandardDeck()
+        self.deck.shuffle_cards()
+        self.table_hand = HandModel()
+        self.pot = 0
+        for i in range(1, 5):
+            self.table_hand.add_card(self.deck.deal_card())
 
 
-#class GameState(QObject):
-
-#class PlayerState(QObject):
 
 
+class GameModell(QObject):
 
-#class GameModell(QObject):
+    def __init__(self):
+        self.deck = StandardDeck()
+        self.deck.shuffle_cards()
+        self.players = PlayerState(self.deck)
+        self.gamestate = GameState()
+        self.tablelayout = TableCardsView(self.gamestate.table_hand)
+        self.playerlayout = BotView(self.players)
 
 
-class GameView(QGroupBox):
+
+class GameView(QWidget):
     def __init__(self):  # TODO: Add game_model, game_players ?
         super().__init__()
+        self.widget = QMainWindow()
+        self.central = QWidget()
+        self.widget.setCentralWidget(self.central)
+        self.game_modell = GameModell()
+        self.vlayout = QVBoxLayout(self.central)
+        self.vlayout.addWidget(self.game_modell.tablelayout)
+        self.vlayout.addWidget(self.game_modell.playerlayout)
 
-        # self.players = players TODO: Add when players are back
-
-
-        players_hbox = QHBoxLayout()
-
-
-
-        #self.bg = QPixmap('Files/table.png')
-        #self.setBackgroundBrush(QBrush(self.bg))
-
-        raise_amount = 0
-
-        self.setLayout(layout)
+        self.show()
 
 
 
-### Skapa en hand för bordet endast test
-deck = StandardDeck()
-deck.shuffle_cards()
-table_hand = HandModel()
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-table_hand.add_card(deck.deal_card())
-###
 
 app = QApplication(sys.argv)
+game = GameView()
+# TODO: Add to main class instead
+# # widget = QMainWindow()
+# central = QWidget()
+# widget.setCentralWidget(central)
+# #botview = BotView()
+# vlayout = QVBoxLayout(central)
+# betview = BetView()
+# asd = TableCardsView(table_hand)
+# vlayout.addWidget(asd)
+# vlayout.addWidget(botview)
 
- # TODO: Add to main class instead
-widget = QMainWindow()
-central = QWidget()
-widget.setCentralWidget(central)
-botview = BotView()
-vlayout = QVBoxLayout(central)
-betview = BetView()
-asd = TableCardsView(table_hand)
-vlayout.addWidget(asd)
-vlayout.addWidget(botview)
-
-#widget.setGeometry(500, 500, 500, 500)
-widget.show()
+# widget.setGeometry(500, 500, 500, 500)
+#widget.show()
 
 sys.exit(app.exec_())
 # game = GameView()
