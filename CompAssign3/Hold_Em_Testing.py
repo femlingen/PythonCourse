@@ -23,7 +23,6 @@ class Player(Hand):
 
 
 class PlayerView(QGroupBox):
-
     def __init__(self, player):  # TODO: Add dynamic player names and stacks
         super().__init__()
         self.namelabel = QLabel(player.name)
@@ -38,7 +37,6 @@ class PlayerView(QGroupBox):
 
 
 class TotalPlayerView(QGroupBox):
-
     def __init__(self, players):
         super().__init__()
         self.layout = QHBoxLayout()
@@ -91,11 +89,13 @@ class TopView(QGroupBox):  # TODO: Fix all cards and pot added in this layout
         self.layout = QHBoxLayout()
         table_cards = TableCardsView()  # Fix tablecardsview
 
+
 class PlayerState(QObject):
     def __init__(self, deck):
         self.players = []
         self.players.append(Player('Lucas', 1000, deck))
         self.players.append(Player('Frida', 1000, deck))
+
 
 class GameState(QObject):
     def __init__(self):
@@ -107,9 +107,7 @@ class GameState(QObject):
             self.table_hand.add_card(self.deck.deal_card())
 
 
-
-
-class GameModell(QObject):
+class GameModel(QObject):
 
     def __init__(self):
         super().__init__()
@@ -121,14 +119,13 @@ class GameModell(QObject):
         self.playerlayout = BotView(self.playermodel.players)
 
 
-
 class GameView(QWidget):
     def __init__(self):  # TODO: Add game_model, game_players ?
         super().__init__()
         self.widget = QMainWindow()
         self.central = QWidget()
         self.widget.setCentralWidget(self.central)
-        self.game_modell = GameModell()
+        self.game_modell = GameModel()
         self.vlayout = QVBoxLayout(self.central)
         self.vlayout.addWidget(self.game_modell.tablelayout)
         self.vlayout.addWidget(self.game_modell.playerlayout)
