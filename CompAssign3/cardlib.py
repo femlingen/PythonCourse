@@ -30,7 +30,7 @@ class PlayingCard:
         return self.get_value() < other.get_value()
 
     def __eq__(self, other):
-        return self.get_value() == other.get_value()
+        return self.get_value() == other.get_value() and self.suit == other.suit
 
     def __gt__(self, other):
         return self.get_value() > other.get_value()
@@ -40,10 +40,10 @@ class Suit(Enum):
     """
     A class for avoiding mistakes while using suits
     """
-    clubs = 0
-    spades = 1
-    diamonds = 2
-    hearts = 3
+    hearts = 0
+    diamonds = 1
+    spades = 2
+    clubs = 3
 
     def __repr__(self):
         return self.name.capitalize()
@@ -257,10 +257,10 @@ class PokerType(Enum):
     high_card = 0
 
     def __lt__(self, other):
-        return self.get_value() < other.get_value()
+        return self.value < other.value
 
     def __eq__(self, other):
-        return self.get_value() == other.get_value()
+        return self.value == other.value
 
 
 """ Task 4 The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
