@@ -34,7 +34,6 @@ class BetModel(QObject):
         super().__init__()
 
 
-
 class Player(Hand, QObject):
     new_stack = pyqtSignal()
 
@@ -44,6 +43,7 @@ class Player(Hand, QObject):
         self.name = name
         self.deck = deck
         self.stack = stack
+        self.active_player = False
         self.hand_model = HandModel()
         self.give_new_hand()
         self.current_bet = 0
@@ -55,11 +55,6 @@ class Player(Hand, QObject):
     def update_stack(self, pot):
         self.stack += pot
         self.new_stack.emit()
-
-    def bet(self, ammount):
-        self.stack -= ammount
-        self.new_stack.emit()
-
 
 
 # The QWidget class is the base class of all user interface objects.
@@ -124,18 +119,19 @@ class GameState(QObject):
             self.winning_player = 0
             self.new_round()
 
-    def raise_bet(self, ammount):
-
+    def raise_bet(self):
+        # TODO: horisontal slider with min value = 0 and max value player.stack
+        # raise
+        # change active player
         pass
 
     def check_or_call(self):
+        self.players.phase_check +=1
 
-        self.players.phase_check += 1
         if self.players.phase_check == 2:
             self.new_phase()
-        # change stack amount om man callar
-        # change active player
-        pass
+            # change stack amount om man callar
+            # change active player
 
     def new_round(self):
         self.distribute_pot()
@@ -155,12 +151,6 @@ class GameState(QObject):
     def distribute_pot(self):
         self.players.players[self.winning_player].update_stack(self.pot.credits)
         self.pot.clear()
-
-    def change_active_player(self):
-        if self.players.active_player == 0:
-            self.players.active_player = 1
-        elif self.players.active_player == 1:
-            self.players.active_player = 0
 
 # metod  playmessage (str)
 # messagebox som målar upp messagebox

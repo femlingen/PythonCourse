@@ -456,3 +456,18 @@ class PokerHand:
                 if two != three:
                     return three, two
 
+
+
+# two_pair_hand = Hand()
+# one_pair_hand = Hand()
+#
+# tb_cards = [JackCard(Suit.diamonds),QueenCard(Suit.diamonds),NumberedCard(2, Suit.diamonds)]
+#
+# two_pair_hand.take_card(JackCard(Suit.spades))
+# two_pair_hand.take_card(NumberedCard(2, Suit.spades))
+#
+# one_pair_hand.take_card(NumberedCard(2, Suit.hearts))
+# one_pair_hand.take_card(NumberedCard(10, Suit.diamonds))
+#
+# p_h1 = two_pair_hand.best_poker_hand(tb_cards)
+# p_h2 = one_pair_hand.best_poker_hand(tb_cards)
