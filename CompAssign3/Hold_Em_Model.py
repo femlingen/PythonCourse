@@ -113,11 +113,11 @@ class GameState(QObject):
 
         if self.game_phase == 0:
             self.flopp()
-            self.game_phase+1
+            self.game_phase += 1
 
-        if self.game_phase == 1 or self.game_phase == 2:
+        elif self.game_phase == 1 or self.game_phase == 2:
             self.turn_river()
-            self.game_phase +1
+            self.game_phase += 1
 
         else:
             self.new_round()

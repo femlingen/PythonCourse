@@ -35,9 +35,9 @@ class BetView(QGroupBox):
         for button in self.buttons:
             self.layout.addWidget(button)
 
-        self.buttons[0].clicked.connect(self.model.flopp) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
-        self.buttons[1].clicked.connect(self.model.turn_river)  # TODO Som ovan fast till check_or_call
-        self.buttons[2].clicked.connect(self.model.new_round)  # TODO Som ovan fast med fold (bet_model.fold)
+        self.buttons[0].clicked.connect(self.model.new_phase) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
+        self.buttons[1].clicked.connect(self.model.new_phase)  # TODO Som ovan fast till check_or_call
+        self.buttons[2].clicked.connect(self.model.new_phase)  # TODO Som ovan fast med fold (bet_model.fold)
 
         self.slider = QSlider(Qt.Horizontal)  # TODO: Remove or add (Depending on time)
         self.slider.setMinimum(0)
