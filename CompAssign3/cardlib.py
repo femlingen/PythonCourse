@@ -223,6 +223,7 @@ class StandardDeck:
             self.deck_list.append(JackCard(suit))
             self.deck_list.append(QueenCard(suit))
             self.deck_list.append(KingCard(suit))
+            self.shuffle_cards()
 
     def shuffle_cards(self):  # shuffled from random library
         shuffle(self.deck_list)

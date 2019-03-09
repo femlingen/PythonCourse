@@ -34,13 +34,12 @@ class PotModel(QObject):
 class BetModel(QObject):
     bet_signal = pyqtSignal()
 
-    def __init__(self, gamestate):
+    def __init__(self):  # TODO Skall denna klassen behöva ta in gamestate? Nu lägger vi allt längre "ut" i processen
         super().__init__()
-        self.gamestate = gamestate
 
     def fold(self):
         for player in self.gamestate.playermodel.players:
-            if player.active_player == False:
+            if player.active_player is False:
                 # TODO: tilldela pot
                 pass
         self.bet_signal.emit()
@@ -58,15 +57,20 @@ class BetModel(QObject):
         pass
 
 
+
 class Player(Hand):
     def __init__(self, player_name, player_stack, deck):
         super().__init__()
         self.name = player_name
+        self.deck = deck
         self.stack = player_stack
         self.active_player = False
         self.hand_model = HandModel()
-        self.hand_model.add_card(deck.deal_card())
-        self.hand_model.add_card(deck.deal_card())
+        self.give_new_hand()
+
+    def give_new_hand(self):
+        self.hand_model.add_card(self.deck.deal_card())
+        self.hand_model.add_card(self.deck.deal_card())
 
 
 # The QWidget class is the base class of all user interface objects.
@@ -83,19 +87,33 @@ class PlayerState(QObject):
 
 class GameState(QObject):
     def __init__(self):
+        super().__init__()
         self.deck = StandardDeck()
-        self.deck.shuffle_cards()
         self.table_hand = HandModel()
         self.pot = PotModel()
-        for i in range(0, 5):
+        self.bet_model = BetModel()
+        self.active_player = 0
+        self.game_phase = 0
+
+        self.players = PlayerState(self.deck)
+
+    def flopp(self):
+        for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
 
-    def restart_game(self):
-        pass
-        # do shit
-        # kallar på spelare - nya kort
-        # kallar på bordet - nya kort
-        # emit-funktion som uppdaterar game view
+    def turn_river(self):
+        self.table_hand.add_card(self.deck.deal_card())
+
+
+
+    def new_round(self):
+        self.deck = StandardDeck()
+        self.table_hand.drop_all_cards()
+        for player in self.players.players:
+            player.deck = self.deck
+            player.hand_model.drop_all_cards()
+            player.give_new_hand()  # TODO Upppdatera vinnarens stack och byt starting_player
+
 
 
 # metod  playmessage (str)
@@ -105,13 +123,10 @@ class GameState(QObject):
 class GameModel(QObject):
     def __init__(self):
         super().__init__()
-        self.deck = StandardDeck()
-        self.deck.shuffle_cards()
-        self.playermodel = PlayerState(self.deck)
-        self.gamestate = GameState()
-        self.tablelayout = TopView(self.gamestate.table_hand, self.gamestate.pot)
-        self.playerlayout = BottomView(self.playermodel.players)
+        self.start_game()
 
+    def start_game(self):
+        self.gamestate = GameState()
 
 app = QApplication(sys.argv)
 model = GameModel()

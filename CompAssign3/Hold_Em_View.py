@@ -14,46 +14,54 @@ from CompAssign3.card_view import *
 
 class TopView(QGroupBox):  # TODO: Fix all cards and pot added in this layout
 
-    def __init__(self, table_hand, pot):
+    def __init__(self, model):
         super().__init__()
         self.layout = QHBoxLayout()
-        table_cards = TableCardsView(table_hand)  # Fix tablecardsview
-        pot_view = PotView(pot)
-        self.layout.addWidget(table_cards)
-        self.layout.addWidget(pot_view)
+        self.model = model
+        self.table_cards = TableCardsView(self.model.gamestate.table_hand)  # Fix tablecardsview
+        self.pot_view = PotView(self.model.gamestate.pot)
+        self.layout.addWidget(self.table_cards)
+        self.layout.addWidget(self.pot_view)
         self.setLayout(self.layout)
 
 
 class BetView(QGroupBox):
-    def __init__(self):
+    def __init__(self, model):
         super().__init__()
-        buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
+        self.model = model
+        self.buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
         self.layout = QHBoxLayout()
         self.layout.addWidget(QLineEdit('0'))
-        for button in buttons:
+        for button in self.buttons:
             self.layout.addWidget(button)
+
+        self.buttons[0].clicked.connect(self.model.flopp) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
+        self.buttons[1].clicked.connect(self.model.turn_river)  # TODO Som ovan fast till check_or_call
+        self.buttons[2].clicked.connect(self.model.new_round)  # TODO Som ovan fast med fold (bet_model.fold)
 
         self.slider = QSlider(Qt.Horizontal)  # TODO: Remove or add (Depending on time)
         self.slider.setMinimum(0)
         self.slider.setMaximum(1000)  # TODO: Add current player stack
         self.slider.setValue(0)
+
         self.setLayout(self.layout)
 
 
 class BottomView(QGroupBox):
-    def __init__(self, players):
+    def __init__(self, model):
         super().__init__()
-        player_views = TotalPlayerView(players)
+        self.model = model
+        self.player_views = TotalPlayerView(self.model.players)
         self.layout = QHBoxLayout()
-        self.layout.addWidget(BetView())
-        self.layout.addWidget(player_views)
+        self.layout.addWidget(BetView(self.model))
+        self.layout.addWidget(self.player_views)
         self.setLayout(self.layout)
 
 
 class PlayerView(QGroupBox):
     def __init__(self, player):
         super().__init__()
-        self.namelabel = QLabel(player.name) # TODO: hitta något sätt att ändra stacken på
+        self.namelabel = QLabel(player.name)  # TODO: hitta något sätt att ändra stacken på
         self.stacklabel = QLabel(str(player.stack))
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.namelabel)
@@ -63,10 +71,11 @@ class PlayerView(QGroupBox):
 
 
 class TotalPlayerView(QGroupBox):
-    def __init__(self, players):
+    def __init__(self, model):
         super().__init__()
+        self.model = model
         self.layout = QHBoxLayout()
-        for player in players:
+        for player in self.model.players:
             self.layout.addWidget(PlayerView(player))
         self.setLayout(self.layout)
 
@@ -103,17 +112,18 @@ class PotView(QGroupBox):
 
 
 class GameView(QWidget):
-    def __init__(self, model):  # TODO: Add game_model, game_players ?
+    def __init__(self, total_model):  # TODO: Add game_model, game_players ?
         super().__init__()
         self.widget = QMainWindow()
         self.central = QWidget()
         self.widget.setCentralWidget(self.central)
-        self.game_model = model
+        self.game_model = total_model
+        self.tablelayout = TopView(self.game_model)
+        self.playerlayout = BottomView(self.game_model.gamestate)
         self.vlayout = QVBoxLayout(self.central)
-        self.vlayout.addWidget(self.game_model.tablelayout)
-        self.vlayout.addWidget(self.game_model.playerlayout)
+        self.vlayout.addWidget(self.tablelayout)
+        self.vlayout.addWidget(self.playerlayout)
         self.setLayout(self.vlayout)
         self.show()
-
 
 

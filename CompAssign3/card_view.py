@@ -138,10 +138,6 @@ class CardView(QGraphicsView):
 
 
 # A trivial card class (you should use the stuff you made in your library instead!
-class MySimpleCard:
-    def __init__(self, value, suit):
-        self.value = value
-        self.suit = suit
 
 
 # You have made a class similar to this (hopefully):
@@ -191,6 +187,12 @@ class HandModel(Hand, QObject):
         super().add_card(card)
         self.data_changed.emit()
 
+    def drop_all_cards(self):
+        index = []
+        for i in range(0,len(self.cards)):
+            index.append(i)
+        super().drop_cards(index)
+        self.data_changed.emit()
 
 # a method for restarting the game
 #
