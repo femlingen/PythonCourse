@@ -15,10 +15,6 @@ class PotModel(QObject):
         super().__init__()
         self.credits = 0
 
-    def increment(self):
-        self.credits += 1
-        self.new_value.emit()
-
     def __iadd__(self, value):
         self.credits += value
         self.new_value.emit()
@@ -58,6 +54,8 @@ class BetModel(QObject):
 
 
 class Player(Hand):
+    new_stack = pyqtSignal()
+
     def __init__(self, name, stack, deck):
         super().__init__()
         self.name = name
@@ -72,6 +70,9 @@ class Player(Hand):
         self.hand_model.add_card(self.deck.deal_card())
         self.hand_model.add_card(self.deck.deal_card())
 
+    def update_stack(self, pot):
+        self.stack += pot
+        self.new_value.emit()
 
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
@@ -93,6 +94,7 @@ class GameState(QObject):
         self.pot = PotModel()
         self.bet_model = BetModel()
         self.game_phase = 0
+        self.winning_player = None
 
         self.players = PlayerState(self.deck)
 
@@ -125,12 +127,15 @@ class GameState(QObject):
     def fold(self):
 
         if self.players.active_player == 0:
-            self.new_round(1)
+            self.winning_player = 1
+            self.new_round()
 
         elif self.players.active_player == 1:
-            self.new_round(0)
+            self.winning_player = 0
+            self.new_round()
 
-    def new_round(self, winner):
+    def new_round(self):
+        self.distribute_pot()
         self.deck = StandardDeck()
         self.table_hand.drop_all_cards()
         self.game_phase = 0
@@ -141,9 +146,12 @@ class GameState(QObject):
             player.give_new_hand()  # TODO Upppdatera vinnarens stack och byt starting_player
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
-        msg.setText("The winner is " + str(player.name)) # TODO: active player
+        msg.setText("The winner is " + str(player.name))  # TODO: active player
         msg.exec_()
 
+    def distribute_pot(self):
+        self.players.players[self.winning_player].update_stack(self.pot.credits)
+        self.pot.clear()
 
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
