@@ -30,7 +30,7 @@ class PotModel(QObject):
 class BetModel(QObject):
     bet_signal = pyqtSignal()
 
-    def __init__(self):  # TODO Skall denna klassen behöva ta in gamestate? Nu lägger vi allt längre "ut" i processen
+    def __init__(self):
         super().__init__()
 
 
@@ -43,10 +43,10 @@ class Player(Hand, QObject):
         self.name = name
         self.deck = deck
         self.stack = stack
-        self.active_player = False
         self.hand_model = HandModel()
         self.give_new_hand()
         self.current_bet = 0
+        self.pokerhand = None
 
     def give_new_hand(self):
         self.hand_model.add_card(self.deck.deal_card())
@@ -55,6 +55,10 @@ class Player(Hand, QObject):
     def update_stack(self, pot):
         self.stack += pot
         self.new_stack.emit()
+
+    def check_pokerhand(self, table_cards):
+        return self.best_poker_hand(table_cards)
+
 
 
 # The QWidget class is the base class of all user interface objects.
@@ -70,6 +74,17 @@ class PlayerState(QObject):
         self.active_player = 0
         self.phase_check = 0
 
+    def check_winner(self, table_hand):
+
+        if self.players[0].best_poker_hand() < self.players[1].best_poker_hand():
+            return 1
+
+        elif self.players[0].best_poker_hand() > self.players[1].best_poker_hand():
+            return 1
+
+        elif self.players[0].best_poker_hand() == self.players[1].best_poker_hand():
+            return 2
+
 
 class GameState(QObject):
     def __init__(self):
@@ -80,20 +95,18 @@ class GameState(QObject):
         self.bet_model = BetModel()
         self.game_phase = 0
         self.winning_player = None
+        self.winning_type_fold = False
 
         self.players = PlayerState(self.deck)
 
     def flopp(self):
         if len(self.table_hand.cards) >= 3:
-            # TODO logic if raising
             return
         for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
 
     def turn_river(self):
         if len(self.table_hand.cards) >= 5:
-            # TODO logic if turn river?
-
             return
         self.table_hand.add_card(self.deck.deal_card())
 
@@ -110,6 +123,7 @@ class GameState(QObject):
             self.new_round()
 
     def fold(self):
+        self.winning_type_fold = True
 
         if self.players.active_player == 0:
             self.winning_player = 1
@@ -133,7 +147,13 @@ class GameState(QObject):
             # change stack amount om man callar
             # change active player
 
+    #def check_winner(self):
+
     def new_round(self):
+
+        if self.winning_type_fold is False:
+            self.winning_player = self.players.check_winner(self.table_hand.cards)
+
         self.distribute_pot()
         self.deck = StandardDeck()
         self.table_hand.drop_all_cards()
@@ -145,7 +165,7 @@ class GameState(QObject):
             player.give_new_hand()  # TODO Upppdatera vinnarens stack och byt starting_player
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
-        msg.setText("The winner is " + self.players.players[self.winning_player].name)  # TODO: active player
+        msg.setText("The winner is " + self.players.players[self.winning_player].name)
         msg.exec_()
 
     def distribute_pot(self):
