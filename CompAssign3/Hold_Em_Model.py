@@ -33,25 +33,6 @@ class BetModel(QObject):
     def __init__(self):  # TODO Skall denna klassen behöva ta in gamestate? Nu lägger vi allt längre "ut" i processen
         super().__init__()
 
-    def fold(self):
-        for player in self.gamestate.playermodel.players:
-            if player.active_player is False:
-                # TODO: tilldela pot
-                pass
-        self.bet_signal.emit()
-
-    def raise_bet(self):
-        # TODO: horisontal slider with min value = 0 and max value player.stack
-        # raise
-        # change active player
-        pass
-
-    def check_or_call(self):
-
-        # change stack amount om man callar
-        # change active player
-        pass
-
 
 class Player(Hand, QObject):
     new_stack = pyqtSignal()
@@ -75,6 +56,7 @@ class Player(Hand, QObject):
         self.stack += pot
         self.new_stack.emit()
 
+
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
@@ -86,6 +68,7 @@ class PlayerState(QObject):
         self.players.append(Player('Lucas', 1000, deck))
         self.players.append(Player('Frida', 1000, deck))
         self.active_player = 0
+        self.phase_check = 0
 
 
 class GameState(QObject):
@@ -135,6 +118,20 @@ class GameState(QObject):
         elif self.players.active_player == 1:
             self.winning_player = 0
             self.new_round()
+
+    def raise_bet(self):
+        # TODO: horisontal slider with min value = 0 and max value player.stack
+        # raise
+        # change active player
+        pass
+
+    def check_or_call(self):
+        self.players.phase_check +=1
+
+        if self.players.phase_check == 2:
+            self.new_phase()
+            # change stack amount om man callar
+            # change active player
 
     def new_round(self):
         self.distribute_pot()
