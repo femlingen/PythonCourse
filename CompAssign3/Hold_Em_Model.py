@@ -82,7 +82,7 @@ class PlayerState(QObject):
         self.players = []
         self.players.append(Player('Lucas', 1000, deck))
         self.players.append(Player('Frida', 1000, deck))
-        self.active_player = self.players[0]
+        self.active_player = 0
 
 
 class GameState(QObject):
@@ -92,7 +92,6 @@ class GameState(QObject):
         self.table_hand = HandModel()
         self.pot = PotModel()
         self.bet_model = BetModel()
-        self.active_player = 0
         self.game_phase = 0
 
         self.players = PlayerState(self.deck)
@@ -124,12 +123,14 @@ class GameState(QObject):
             self.new_round()
 
     def fold(self):
-        for player in self.players.players:
-            if player.active_player != player:
-                print("folded")
-                self.new_round()
 
-    def new_round(self):
+        if self.players.active_player == 0:
+            self.new_round(1)
+
+        elif self.players.active_player == 1:
+            self.new_round(0)
+
+    def new_round(self, winner):
         self.deck = StandardDeck()
         self.table_hand.drop_all_cards()
         self.game_phase = 0
