@@ -61,13 +61,20 @@ class BottomView(QGroupBox):
 class PlayerView(QGroupBox):
     def __init__(self, player):
         super().__init__()
-        self.namelabel = QLabel(player.name)  # TODO: hitta något sätt att ändra stacken på
-        self.stacklabel = QLabel(str(player.stack))
+        self.player = player
+        self.name_label = QLabel(self.player.name)  # TODO: hitta något sätt att ändra stacken på
+        self.stack_label = QLabel(str(self.player.stack))
         self.layout = QHBoxLayout()
-        self.layout.addWidget(self.namelabel)
-        self.layout.addWidget(self.stacklabel)
-        self.layout.addWidget(CardView(player.hand_model))
+        self.layout.addWidget(self.name_label)
+        self.layout.addWidget(self.stack_label)
+        self.layout.addWidget(CardView(self.player.hand_model))
         self.setLayout(self.layout)
+
+        self.player.new_stack.connect(self.update_value)
+        self.update_value()
+
+    def update_value(self):
+        self.stack_label.setText('Player stack ${}'.format(self.player.stack()))
 
 
 class TotalPlayerView(QGroupBox):
@@ -108,7 +115,7 @@ class PotView(QGroupBox):
 
 
 class GameView(QWidget):
-    def __init__(self, total_model):  # TODO: Add game_model, game_players ?
+    def __init__(self, total_model):
         super().__init__()
         self.widget = QMainWindow()
         self.central = QWidget()
