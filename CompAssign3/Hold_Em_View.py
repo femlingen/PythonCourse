@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
 from CompAssign3.cardlib import *
 import sys
+from PyQt5 import QtWidgets, QtGui,QtCore
 from CompAssign3.card_view import *
 
 
@@ -62,6 +63,7 @@ class PlayerView(QGroupBox):
     def __init__(self, player):
         super().__init__()
         self.player = player
+
         self.v_layout = QVBoxLayout()
 
         self.name_label = QLabel(self.player.name)  # TODO: hitta något sätt att ändra stacken på
@@ -69,8 +71,11 @@ class PlayerView(QGroupBox):
         self.v_layout.addWidget(self.name_label)
         self.v_layout.addWidget(self.stack_label)
 
+        self.name_label.setFont(QtGui.QFont('SansSerif', 24))
+        self.stack_label.setFont(QtGui.QFont('SansSerif', 16))
+
         self.layout = QHBoxLayout()
-        self.layout.addWidget(self.v_layout)
+        self.layout.addLayout(self.v_layout)
         self.layout.addWidget(CardView(self.player.hand_model))
         self.setLayout(self.layout)
 
@@ -78,7 +83,7 @@ class PlayerView(QGroupBox):
         self.update_value()
 
     def update_value(self):
-        self.stack_label.setText('Player stack ${}'.format(self.player.stack))
+        self.stack_label.setText('Player stack:\n${}'.format(self.player.stack))
 
 
 class TotalPlayerView(QGroupBox):
@@ -107,6 +112,8 @@ class PotView(QGroupBox):
         self.pot = pot_model
         self.pot_label = QLabel(str(self.pot.value()))
 
+        self.pot_label.setFont(QtGui.QFont('SansSerif', 24))
+
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.pot_label)
         self.setLayout(self.layout)
@@ -131,6 +138,8 @@ class GameView(QWidget):
         self.vlayout.addWidget(self.tablelayout)
         self.vlayout.addWidget(self.playerlayout)
         self.setLayout(self.vlayout)
+        self.styleSheet()
         self.show()
+
 
 
