@@ -62,11 +62,15 @@ class PlayerView(QGroupBox):
     def __init__(self, player):
         super().__init__()
         self.player = player
+        self.v_layout = QVBoxLayout()
+
         self.name_label = QLabel(self.player.name)  # TODO: hitta något sätt att ändra stacken på
         self.stack_label = QLabel(str(self.player.stack))
+        self.v_layout.addWidget(self.name_label)
+        self.v_layout.addWidget(self.stack_label)
+
         self.layout = QHBoxLayout()
-        self.layout.addWidget(self.name_label)
-        self.layout.addWidget(self.stack_label)
+        self.layout.addWidget(self.v_layout)
         self.layout.addWidget(CardView(self.player.hand_model))
         self.setLayout(self.layout)
 
@@ -74,7 +78,7 @@ class PlayerView(QGroupBox):
         self.update_value()
 
     def update_value(self):
-        self.stack_label.setText('Player stack ${}'.format(self.player.stack()))
+        self.stack_label.setText('Player stack ${}'.format(self.player.stack))
 
 
 class TotalPlayerView(QGroupBox):

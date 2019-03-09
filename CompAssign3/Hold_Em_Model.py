@@ -53,11 +53,12 @@ class BetModel(QObject):
         pass
 
 
-class Player(Hand):
+class Player(Hand, QObject):
     new_stack = pyqtSignal()
 
     def __init__(self, name, stack, deck):
-        super().__init__()
+        Hand.__init__(self)
+        QObject.__init__(self)
         self.name = name
         self.deck = deck
         self.stack = stack
@@ -72,11 +73,12 @@ class Player(Hand):
 
     def update_stack(self, pot):
         self.stack += pot
-        self.new_value.emit()
+        self.new_stack.emit()
 
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
+
 
 class PlayerState(QObject):
     def __init__(self, deck):
@@ -146,7 +148,7 @@ class GameState(QObject):
             player.give_new_hand()  # TODO Upppdatera vinnarens stack och byt starting_player
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
-        msg.setText("The winner is " + str(player.name))  # TODO: active player
+        msg.setText("The winner is " + self.players.players[self.winning_player].name)  # TODO: active player
         msg.exec_()
 
     def distribute_pot(self):
@@ -156,6 +158,7 @@ class GameState(QObject):
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
 # lyssnar på gamemessage-signal som initieras av metamodellen
+
 
 class GameModel(QObject):
     def __init__(self):
