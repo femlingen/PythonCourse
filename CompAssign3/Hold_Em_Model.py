@@ -124,7 +124,7 @@ class GameState(QObject):
             self.new_round()
 
     def fold(self):
-        for player in self.players:
+        for player in self.players.players:
             if player.active_player != player:
                 print("folded")
                 self.new_round()
