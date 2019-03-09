@@ -57,13 +57,12 @@ class BetModel(QObject):
         pass
 
 
-
 class Player(Hand):
-    def __init__(self, player_name, player_stack, deck):
+    def __init__(self, name, stack, deck):
         super().__init__()
-        self.name = player_name
+        self.name = name
         self.deck = deck
-        self.stack = player_stack
+        self.stack = stack
         self.active_player = False
         self.hand_model = HandModel()
         self.give_new_hand()
@@ -98,13 +97,18 @@ class GameState(QObject):
         self.players = PlayerState(self.deck)
 
     def flopp(self):
+        if len(self.table_hand.cards) >= 3:
+            # TODO logic if raising
+            return
         for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
 
     def turn_river(self):
+        if len(self.table_hand.cards) >= 5:
+            # TODO logic if turn river?
+
+            return
         self.table_hand.add_card(self.deck.deal_card())
-
-
 
     def new_round(self):
         self.deck = StandardDeck()
@@ -113,7 +117,10 @@ class GameState(QObject):
             player.deck = self.deck
             player.hand_model.drop_all_cards()
             player.give_new_hand()  # TODO Upppdatera vinnarens stack och byt starting_player
-
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Critical)
+        msg.setText("The winner is " + str(player.name)) # TODO: active player
+        msg.exec_()
 
 
 # metod  playmessage (str)
@@ -127,6 +134,7 @@ class GameModel(QObject):
 
     def start_game(self):
         self.gamestate = GameState()
+
 
 app = QApplication(sys.argv)
 model = GameModel()
