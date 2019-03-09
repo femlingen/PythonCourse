@@ -111,9 +111,6 @@ class GameState(QObject):
             return
         self.table_hand.add_card(self.deck.deal_card())
 
-
-
-
     def new_phase(self): #TODO när båda har call = true så kallar vi på new phase
         if self.game_phase == 0:
             self.flopp()
@@ -125,6 +122,12 @@ class GameState(QObject):
 
         else:
             self.new_round()
+
+    def fold(self):
+        for player in self.players:
+            if player.active_player != player:
+                print("folded")
+                self.new_round()
 
     def new_round(self):
         self.deck = StandardDeck()
