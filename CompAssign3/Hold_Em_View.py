@@ -96,11 +96,7 @@ class PotView(QGroupBox):
         self.pot = pot_model
         self.pot_label = QLabel(str(self.pot.value()))
 
-        self.button = QPushButton("Test: +1")
-        self.button.clicked.connect(self.pot.increment)
-
         self.layout = QHBoxLayout()
-        self.layout.addWidget(self.button)
         self.layout.addWidget(self.pot_label)
         self.setLayout(self.layout)
 
