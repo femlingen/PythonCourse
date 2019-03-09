@@ -76,7 +76,6 @@ class Player(Hand):
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
 
-
 class PlayerState(QObject):
     def __init__(self, deck):
         self.players = []
@@ -110,9 +109,24 @@ class GameState(QObject):
             return
         self.table_hand.add_card(self.deck.deal_card())
 
+    def new_phase(self):
+
+        if self.game_phase == 0:
+            self.flopp()
+            self.game_phase+1
+
+        if self.game_phase == 1 or self.game_phase == 2:
+            self.turn_river()
+            self.game_phase +1
+
+        else:
+            self.new_round()
+
     def new_round(self):
         self.deck = StandardDeck()
         self.table_hand.drop_all_cards()
+        self.game_phase = 0
+
         for player in self.players.players:
             player.deck = self.deck
             player.hand_model.drop_all_cards()
