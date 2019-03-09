@@ -66,6 +66,7 @@ class Player(Hand):
         self.active_player = False
         self.hand_model = HandModel()
         self.give_new_hand()
+        self.current_bet = 0
 
     def give_new_hand(self):
         self.hand_model.add_card(self.deck.deal_card())
@@ -81,6 +82,7 @@ class PlayerState(QObject):
         self.players = []
         self.players.append(Player('Lucas', 1000, deck))
         self.players.append(Player('Frida', 1000, deck))
+        self.active_player = self.players[0]
 
 
 class GameState(QObject):
@@ -109,8 +111,10 @@ class GameState(QObject):
             return
         self.table_hand.add_card(self.deck.deal_card())
 
-    def new_phase(self):
 
+
+
+    def new_phase(self): #TODO när båda har call = true så kallar vi på new phase
         if self.game_phase == 0:
             self.flopp()
             self.game_phase += 1
