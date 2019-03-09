@@ -33,24 +33,6 @@ class BetModel(QObject):
     def __init__(self):  # TODO Skall denna klassen behöva ta in gamestate? Nu lägger vi allt längre "ut" i processen
         super().__init__()
 
-    def fold(self):
-        for player in self.gamestate.playermodel.players:
-            if player.active_player is False:
-                # TODO: tilldela pot
-                pass
-        self.bet_signal.emit()
-
-    def raise_bet(self):
-        # TODO: horisontal slider with min value = 0 and max value player.stack
-        # raise
-        # change active player
-        pass
-
-    def check_or_call(self):
-
-        # change stack amount om man callar
-        # change active player
-        pass
 
 
 class Player(Hand, QObject):
@@ -62,7 +44,6 @@ class Player(Hand, QObject):
         self.name = name
         self.deck = deck
         self.stack = stack
-        self.active_player = False
         self.hand_model = HandModel()
         self.give_new_hand()
         self.current_bet = 0
@@ -75,6 +56,12 @@ class Player(Hand, QObject):
         self.stack += pot
         self.new_stack.emit()
 
+    def bet(self, ammount):
+        self.stack -= ammount
+        self.new_stack.emit()
+
+
+
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
@@ -86,6 +73,7 @@ class PlayerState(QObject):
         self.players.append(Player('Lucas', 1000, deck))
         self.players.append(Player('Frida', 1000, deck))
         self.active_player = 0
+        self.phase_check = 0
 
 
 class GameState(QObject):
@@ -136,6 +124,19 @@ class GameState(QObject):
             self.winning_player = 0
             self.new_round()
 
+    def raise_bet(self, ammount):
+
+        pass
+
+    def check_or_call(self):
+
+        self.players.phase_check += 1
+        if self.players.phase_check == 2:
+            self.new_phase()
+        # change stack amount om man callar
+        # change active player
+        pass
+
     def new_round(self):
         self.distribute_pot()
         self.deck = StandardDeck()
@@ -154,6 +155,12 @@ class GameState(QObject):
     def distribute_pot(self):
         self.players.players[self.winning_player].update_stack(self.pot.credits)
         self.pot.clear()
+
+    def change_active_player(self):
+        if self.players.active_player == 0:
+            self.players.active_player = 1
+        elif self.players.active_player == 1:
+            self.players.active_player = 0
 
 # metod  playmessage (str)
 # messagebox som målar upp messagebox

@@ -31,11 +31,13 @@ class BetView(QGroupBox):
         self.model = model
         self.buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
         self.layout = QHBoxLayout()
-        self.layout.addWidget(QLineEdit('0'))
+        self.bet_value = QLineEdit()
+        self.bet_value.setText('0')
+        self.layout.addWidget(self.bet_value)
         for button in self.buttons:
             self.layout.addWidget(button)
 
-        self.buttons[0].clicked.connect(self.model.new_phase) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
+        self.buttons[0].clicked.connect(self.bet_action) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
         self.buttons[1].clicked.connect(self.model.new_phase)  # TODO Som ovan fast till check_or_call
         self.buttons[2].clicked.connect(self.model.fold)  # TODO Som ovan fast med fold (bet_model.fold)
 
@@ -45,6 +47,10 @@ class BetView(QGroupBox):
         self.slider.setValue(0)
 
         self.setLayout(self.layout)
+
+    def bet_action(self):
+        self.model.raise_bet(int(self.bet_value.text()))
+
 
 
 class BottomView(QGroupBox):
@@ -70,7 +76,7 @@ class PlayerView(QGroupBox):
         self.v_layout.addWidget(self.stack_label)
 
         self.layout = QHBoxLayout()
-        self.layout.addWidget(self.v_layout)
+        self.layout.addLayout(self.v_layout)
         self.layout.addWidget(CardView(self.player.hand_model))
         self.setLayout(self.layout)
 
