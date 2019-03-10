@@ -89,9 +89,9 @@ class PlayerState(QObject):
 
     def check_winners(self, table_cards):
         if self.players[0].check_hand_strength(table_cards) < self.players[1].check_hand_strength(table_cards):
-            return 0
-        elif self.players[0].check_hand_strength(table_cards) > self.players[1].check_hand_strength(table_cards):
             return 1
+        elif self.players[0].check_hand_strength(table_cards) > self.players[1].check_hand_strength(table_cards):
+            return 0
         elif self.players[0].check_hand_strength(table_cards) == self.players[1].check_hand_strength(table_cards):
             return 2
 
@@ -179,7 +179,7 @@ class GameState(QObject):
         self.current_call_bet = 0
 
         self.change_active_player()
-        self.new_phase()
+        self.new_phase() # TODO: problem: changes phase check after new phase
         self.players.phase_check = 1
         self.activity()
 
