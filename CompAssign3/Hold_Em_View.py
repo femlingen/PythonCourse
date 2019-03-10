@@ -61,8 +61,12 @@ class BetView(QGroupBox):
         self.setLayout(self.layout)
 
     def raise_amount(self):
-        self.model.raise_bet(int(self.input.text()))
-        self.input.setText('0')
+        try:
+            int(self.input.text())
+            self.model.raise_bet(int(self.input.text()))
+            self.input.setText('0')
+        except:
+            pass
 
     def raise_check_or_call(self):
         self.model.check_or_call()
