@@ -123,6 +123,7 @@ class GameState(QObject):
                 self.new_round()
 
             self.players.phase_check = 0
+            self.players.active_player = 0
 
     def fold(self):
 
@@ -138,6 +139,8 @@ class GameState(QObject):
         temp_call_bet = amount
         amount += self.current_call_bet
         self.current_call_bet = temp_call_bet
+        self.players.phase_check = 0
+
         if amount >= self.players.players[self.players.active_player].stack:
             amount = self.players.players[self.players.active_player].stack
 
@@ -145,11 +148,11 @@ class GameState(QObject):
             self.check_or_call()
 
         else:
-            self.players.phase_check = 0
             self.pot.credits += amount
             self.players.players[self.players.active_player].bet(amount)
             self.pot.update_pot()
             self.new_phase()
+            self.players.phase_check = 1
         self.change_active_player()
 
     def check_or_call(self):
