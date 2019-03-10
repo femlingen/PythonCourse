@@ -64,10 +64,12 @@ class Player(Hand, QObject):
         self.stack -= amount
         self.new_stack.emit()
 
+    def check_hand_strength(self, table_cards):
+        return self.best_poker_hand(table_cards)
+
     def change_activity(self, activity):
         self.is_active = activity
         self.new_activity.emit()
-
 
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
@@ -107,10 +109,13 @@ class GameState(QObject):
         self.winning_player = None
         self.current_call_bet = 0
         self.turn_list = [0, 1]
+
+
         self.players = PlayerState(self.deck)
 
     def flopp(self):
         if len(self.table_hand.cards) >= 3:
+            # TODO logic if raising
             return
         for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
@@ -205,16 +210,26 @@ class GameState(QObject):
             self.pot.clear()
 
     def change_active_player(self):
-        if self.active_player == 0:
+        if self.players.active_player == 0:
             self.active_player = 1
             self.turn_list = [1, 0]
-        elif self.active_player == 1:
-            self.active_player = 0
+        elif self.players.active_player == 1:
+            self.players.active_player = 0
             self.turn_list = [0, 1]
         self.turn_signal.emit()
 
     def winner(self):
         self.winning_player = self.players.check_winners(self.table_hand.cards)
+
+    def activity(self):
+        if self.turn_list == [0, 1]:
+            self.players.players[0].new_activity(True)
+            self.players.players[1].new_activity(False)
+        elif self.turn_list == [1, 0]:
+            self.players.players[1].new_activity(True)
+            self.players.players[0].new_activity(False)
+
+
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
 # lyssnar på gamemessage-signal som initieras av metamodellen
