@@ -39,6 +39,7 @@ class BetModel(QObject):
 
 class Player(Hand, QObject):
     new_stack = pyqtSignal()
+    new_activity = pyqtSignal()
 
     def __init__(self, name, stack, deck):
         Hand.__init__(self)
@@ -49,6 +50,7 @@ class Player(Hand, QObject):
         self.hand_model = HandModel()
         self.give_new_hand()
         self.current_bet = 0
+        self.is_active = False
 
     def give_new_hand(self):
         self.hand_model.add_card(self.deck.deal_card())
@@ -65,6 +67,10 @@ class Player(Hand, QObject):
     def check_hand_strength(self, table_cards):
         return self.best_poker_hand(table_cards)
 
+    def change_activity(self, activity):
+        self.is_active = activity
+        self.new_activity.emit()
+
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
 # other events from the window system, and paints a representation of itself on the screen.
@@ -78,7 +84,6 @@ class PlayerState(QObject):
         self.players.append(Player('Frida', 1000, deck))
         self.active_player = 0
         self.phase_check = 0
-        self.turn_list = [0, 1]
 
     def check_winners(self, table_cards):
         if self.players[0].check_hand_strength() < self.players[1].check_hand_strength():
@@ -101,6 +106,8 @@ class GameState(QObject):
         self.game_phase = 0
         self.winning_player = None
         self.current_call_bet = 0
+        self.turn_list = [0, 1]
+
 
         self.players = PlayerState(self.deck)
 
@@ -203,15 +210,25 @@ class GameState(QObject):
 
     def change_active_player(self):
         if self.players.active_player == 0:
-            self.players.active_player = 1
-            self.players.turn_list = [1, 0]
+            self.active_player = 1
+            self.turn_list = [1, 0]
         elif self.players.active_player == 1:
             self.players.active_player = 0
-            self.players.turn_list = [0, 1]
+            self.turn_list = [0, 1]
         self.turn_signal.emit()
 
     def winner(self):
         self.winning_player = self.players.check_winners(self.table_hand.cards)
+
+    def activity(self):
+        if self.turn_list == [0, 1]:
+            self.players.players[0].new_activity(True)
+            self.players.players[1].new_activity(False)
+        elif self.turn_list == [1, 0]:
+            self.players.players[1].new_activity(True)
+            self.players.players[0].new_activity(False)
+
+
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
 # lyssnar på gamemessage-signal som initieras av metamodellen
