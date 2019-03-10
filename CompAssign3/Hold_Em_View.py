@@ -44,7 +44,8 @@ class BetView(QGroupBox):
             button.setStyleSheet("QPushButton { background-color: white; border-style: outset; border-width: 2px; "
                                  "border-radius: 10px; border-color: beige; "
                                  "font: bold 14px; "
-                                 "min-width: 10em; "
+                                 "min-width: 10em;"
+                                 "max-width: 10em; "
                                  "padding: 6px; }"
                                  "QPushButton:pressed { background-color: green }" )
 
@@ -118,10 +119,10 @@ class PlayerView(QGroupBox):
     def update_turn(self):
         if self.player.is_active is True:
             self.active_label.setText("Your turn!")
-            self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
+            self.setStyleSheet(" QWidget { font: bold 24px; }")
         else:
-            self.active_label.setText("Wait.....")
-            self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
+            self.active_label.setText("Wait...")
+            self.setStyleSheet(" QWidget { font: bold 24px; }")
 
 
 class TotalPlayerView(QGroupBox):

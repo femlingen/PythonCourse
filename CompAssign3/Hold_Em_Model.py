@@ -88,11 +88,11 @@ class PlayerState(QObject):
         self.turn_list = [0, 1]
 
     def check_winners(self, table_cards):
-        if self.players[0].check_hand_strength() < self.players[1].check_hand_strength():
+        if self.players[0].check_hand_strength(table_cards) < self.players[1].check_hand_strength(table_cards):
             return 0
-        elif self.players[0].check_hand_strength() > self.players[1].check_hand_strength():
+        elif self.players[0].check_hand_strength(table_cards) > self.players[1].check_hand_strength(table_cards):
             return 1
-        elif self.players[0].check_hand_strength() == self.players[1].check_hand_strength():
+        elif self.players[0].check_hand_strength(table_cards) == self.players[1].check_hand_strength(table_cards):
             return 2
 
 
@@ -109,13 +109,11 @@ class GameState(QObject):
         self.winning_player = None
         self.current_call_bet = 0
         self.turn_list = [0, 1]
-
-
         self.players = PlayerState(self.deck)
+        self.activity()
 
     def flopp(self):
         if len(self.table_hand.cards) >= 3:
-            # TODO logic if raising
             return
         for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
@@ -138,9 +136,9 @@ class GameState(QObject):
             else:
                 self.new_round()
 
-            self.players.phase_check = 0
-            self.players.active_player = 0
+            self.change_active_player(0)
         self.players.phase_check = 0
+        self.activity()
 
     def fold(self):
 
@@ -168,9 +166,10 @@ class GameState(QObject):
             self.pot.credits += amount
             self.players.players[self.players.active_player].bet(amount)
             self.pot.update_pot()
+            self.change_active_player()
             self.new_phase()
             self.players.phase_check = 1
-        self.change_active_player()
+
 
     def check_or_call(self):
 
@@ -179,10 +178,10 @@ class GameState(QObject):
         self.pot.update_pot()
         self.current_call_bet = 0
 
-        self.new_phase()
         self.change_active_player()
+        self.new_phase()
         self.players.phase_check = 1
-
+        self.activity()
 
     def new_round(self):
         self.distribute_pot()
@@ -209,25 +208,30 @@ class GameState(QObject):
             self.players.players[self.winning_player].update_stack(self.pot.credits/2)
             self.pot.clear()
 
-    def change_active_player(self):
+    def change_active_player(self, i=1):
+        if i == 0:
+            self.players.active_player = 1
+            self.turn_list = [0,1]
+
         if self.players.active_player == 0:
-            self.active_player = 1
+            self.players.active_player = 1
             self.turn_list = [1, 0]
         elif self.players.active_player == 1:
             self.players.active_player = 0
             self.turn_list = [0, 1]
-        self.turn_signal.emit()
+        self.activity()
 
     def winner(self):
         self.winning_player = self.players.check_winners(self.table_hand.cards)
 
     def activity(self):
         if self.turn_list == [0, 1]:
-            self.players.players[0].new_activity(True)
-            self.players.players[1].new_activity(False)
+            self.players.players[0].change_activity(True)
+            self.players.players[1].change_activity(False)
+
         elif self.turn_list == [1, 0]:
-            self.players.players[1].new_activity(True)
-            self.players.players[0].new_activity(False)
+            self.players.players[1].change_activity(True)
+            self.players.players[0].change_activity(False)
 
 
 # metod  playmessage (str)
