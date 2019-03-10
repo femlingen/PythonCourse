@@ -75,13 +75,13 @@ class PlayerView(QGroupBox):
 
         self.name_label = QLabel(self.player.name)
         self.stack_label = QLabel(str(self.player.stack))
+        self.active_label = QLabel('')
 
-        is_active = True
-
-        if is_active:  # TODO: change to the variable is active
-            active_label = QLabel("Your turn")
-            self.v_layout.addWidget(active_label)
-            self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
+        #is_active = True
+        #if is_active:  # TODO: change to the variable is active
+         #   active_label = QLabel("Your turn")
+          #  self.v_layout.addWidget(active_label)
+           # self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
 
         self.v_layout.addWidget(self.name_label)
         self.v_layout.addWidget(self.stack_label)
@@ -99,8 +99,15 @@ class PlayerView(QGroupBox):
         self.player.new_stack.connect(self.update_value)
         self.update_value()
 
+        self.player.turn_signal.connect(self.update_turn)
+        self.update_turn()
+
     def update_value(self):
         self.stack_label.setText('Stack:\n${}'.format(self.player.stack))
+
+    def update_turn(self):
+        self.active_label.setText('Your turn!')
+
 
 
 class TotalPlayerView(QGroupBox):
