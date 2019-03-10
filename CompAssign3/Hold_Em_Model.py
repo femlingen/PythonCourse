@@ -30,8 +30,9 @@ class PotModel(QObject):
 class BetModel(QObject):
     bet_signal = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self):  # TODO Skall denna klassen behöva ta in gamestate? Nu lägger vi allt längre "ut" i processen
         super().__init__()
+
 
 
 class Player(Hand, QObject):
@@ -46,7 +47,6 @@ class Player(Hand, QObject):
         self.hand_model = HandModel()
         self.give_new_hand()
         self.current_bet = 0
-        self.pokerhand = None
 
     def give_new_hand(self):
         self.hand_model.add_card(self.deck.deal_card())
@@ -56,8 +56,9 @@ class Player(Hand, QObject):
         self.stack += pot
         self.new_stack.emit()
 
-    def check_pokerhand(self, table_cards):
-        return self.best_poker_hand(table_cards)
+    def bet(self, ammount):
+        self.stack -= ammount
+        self.new_stack.emit()
 
 
 
@@ -67,26 +68,18 @@ class Player(Hand, QObject):
 
 
 class PlayerState(QObject):
+    turn_signal = pyqtSignal
     def __init__(self, deck):
         self.players = []
         self.players.append(Player('Lucas', 1000, deck))
         self.players.append(Player('Frida', 1000, deck))
         self.active_player = 0
         self.phase_check = 0
-
-    def check_winner(self, table_hand):
-
-        if self.players[0].best_poker_hand() < self.players[1].best_poker_hand():
-            return 1
-
-        elif self.players[0].best_poker_hand() > self.players[1].best_poker_hand():
-            return 1
-
-        elif self.players[0].best_poker_hand() == self.players[1].best_poker_hand():
-            return 2
+        self.turn_list = [0, 1]
 
 
 class GameState(QObject):
+    turn_signal = pyqtSignal()
     def __init__(self):
         super().__init__()
         self.deck = StandardDeck()
@@ -95,18 +88,20 @@ class GameState(QObject):
         self.bet_model = BetModel()
         self.game_phase = 0
         self.winning_player = None
-        self.winning_type_fold = False
 
         self.players = PlayerState(self.deck)
 
     def flopp(self):
         if len(self.table_hand.cards) >= 3:
+            # TODO logic if raising
             return
         for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
 
     def turn_river(self):
         if len(self.table_hand.cards) >= 5:
+            # TODO logic if turn river?
+
             return
         self.table_hand.add_card(self.deck.deal_card())
 
@@ -123,7 +118,6 @@ class GameState(QObject):
             self.new_round()
 
     def fold(self):
-        self.winning_type_fold = True
 
         if self.players.active_player == 0:
             self.winning_player = 1
@@ -133,27 +127,20 @@ class GameState(QObject):
             self.winning_player = 0
             self.new_round()
 
-    def raise_bet(self):
-        # TODO: horisontal slider with min value = 0 and max value player.stack
-        # raise
-        # change active player
+    def raise_bet(self, ammount):
+
         pass
 
     def check_or_call(self):
-        self.players.phase_check +=1
 
+        self.players.phase_check += 1
         if self.players.phase_check == 2:
             self.new_phase()
-            # change stack amount om man callar
-            # change active player
-
-    #def check_winner(self):
+        # change stack amount om man callar
+        # change active player
+        pass
 
     def new_round(self):
-
-        if self.winning_type_fold is False:
-            self.winning_player = self.players.check_winner(self.table_hand.cards)
-
         self.distribute_pot()
         self.deck = StandardDeck()
         self.table_hand.drop_all_cards()
@@ -165,12 +152,23 @@ class GameState(QObject):
             player.give_new_hand()  # TODO Upppdatera vinnarens stack och byt starting_player
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Critical)
-        msg.setText("The winner is " + self.players.players[self.winning_player].name)
+        msg.setText("The winner is " + self.players.players[self.winning_player].name)  # TODO: active player
         msg.exec_()
 
     def distribute_pot(self):
         self.players.players[self.winning_player].update_stack(self.pot.credits)
         self.pot.clear()
+
+    def change_active_player(self):
+        if self.players.active_player == 0:
+            self.players.active_player = 1
+            self.players.turn_list = [1, 0]
+        elif self.players.active_player == 1:
+            self.players.active_player = 0
+            self.players.turn_list = [0, 1]
+        turn_signal.emit()
+
+
 
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
