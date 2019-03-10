@@ -85,8 +85,6 @@ class CardView(QGraphicsView):
         self.scene.clear()
         for i, card in enumerate(self.model.cards):
             # The ID of the card in the dictionary of images is a tuple with (value, suit), both integers
-            # TODO: YOU MUST CORRECT THE EXPRESSION TO MATCH YOUR PLAYING CARDS!!!
-            # TODO: See the __read_cards method for what mapping are used.
             graphics_key = (card.get_value(), card.suit.value)
             renderer = self.back_card if self.model.flipped(i) else self.all_cards[graphics_key]
             c = CardItem(renderer, i)

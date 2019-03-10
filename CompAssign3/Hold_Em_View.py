@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtSvg import *
 from CompAssign3.cardlib import *
+from PyQt5 import QtSvg
 import sys
 from PyQt5 import QtWidgets, QtGui,QtCore
 from CompAssign3.card_view import *
@@ -31,14 +32,18 @@ class BetView(QGroupBox):
         super().__init__()
         self.model = model
         self.buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
-        self.layout = QHBoxLayout()
-        self.bet_value = QLineEdit()
-        self.bet_value.setText('0')
-        self.layout.addWidget(self.bet_value)
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(QLineEdit('0'))
         for button in self.buttons:
             self.layout.addWidget(button)
+            button.setStyleSheet("QPushButton { background-color: white; border-style: outset; border-width: 2px; "
+                                 "border-radius: 10px; border-color: beige; "
+                                 "font: bold 14px; "
+                                 "min-width: 10em; "
+                                 "padding: 6px; }"
+                                 "QPushButton:pressed { background-color: green }" )
 
-        self.buttons[0].clicked.connect(self.bet_action) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
+        self.buttons[0].clicked.connect(self.model.new_phase) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
         self.buttons[1].clicked.connect(self.model.new_phase)  # TODO Som ovan fast till check_or_call
         self.buttons[2].clicked.connect(self.model.fold)  # TODO Som ovan fast med fold (bet_model.fold)
 
@@ -48,10 +53,6 @@ class BetView(QGroupBox):
         self.slider.setValue(0)
 
         self.setLayout(self.layout)
-
-    def bet_action(self):
-        self.model.raise_bet(int(self.bet_value.text()))
-
 
 
 class BottomView(QGroupBox):
@@ -72,7 +73,7 @@ class PlayerView(QGroupBox):
 
         self.v_layout = QVBoxLayout()
 
-        self.name_label = QLabel(self.player.name)  # TODO: hitta något sätt att ändra stacken på
+        self.name_label = QLabel(self.player.name)
         self.stack_label = QLabel(str(self.player.stack))
         self.v_layout.addWidget(self.name_label)
         self.v_layout.addWidget(self.stack_label)
@@ -83,13 +84,15 @@ class PlayerView(QGroupBox):
         self.layout = QHBoxLayout()
         self.layout.addLayout(self.v_layout)
         self.layout.addWidget(CardView(self.player.hand_model))
+
+        self.setStyleSheet(" CardView { min-width: 14em; max-width: 20em; max-height: 12em; }")
         self.setLayout(self.layout)
 
         self.player.new_stack.connect(self.update_value)
         self.update_value()
 
     def update_value(self):
-        self.stack_label.setText('Player stack:\n${}'.format(self.player.stack))
+        self.stack_label.setText('Stack:\n${}'.format(self.player.stack))
 
 
 class TotalPlayerView(QGroupBox):
@@ -99,6 +102,7 @@ class TotalPlayerView(QGroupBox):
         self.layout = QHBoxLayout()
         for player in self.model.players:
             self.layout.addWidget(PlayerView(player))
+        self.setStyleSheet("QLabel { padding: 2px; }")
         self.setLayout(self.layout)
 
 
@@ -118,7 +122,8 @@ class PotView(QGroupBox):
         self.pot = pot_model
         self.pot_label = QLabel(str(self.pot.value()))
 
-        self.pot_label.setFont(QtGui.QFont('SansSerif', 24))
+        self.pot_label.setFont(QtGui.QFont('SansSerif', 18))
+        self.pot_label.setStyleSheet("QLabel { padding: 6px; min-width: 5em; }")
 
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.pot_label)
@@ -128,7 +133,7 @@ class PotView(QGroupBox):
         self.pot.new_value.connect(self.update_value)
 
     def update_value(self):
-        self.pot_label.setText('Pot value ${}'.format(self.pot.value()))
+        self.pot_label.setText('Pot ${}'.format(self.pot.value()))
 
 
 class GameView(QWidget):
@@ -145,6 +150,10 @@ class GameView(QWidget):
         self.vlayout.addWidget(self.playerlayout)
         self.setLayout(self.vlayout)
         self.styleSheet()
+        self.width = 700
+        self.height = 450
+        self.setGeometry(150, 150, self.width, self.height)
+        self.setWindowTitle("Texas HoldEm")
         self.show()
 
 
