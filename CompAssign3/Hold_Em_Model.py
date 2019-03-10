@@ -26,13 +26,15 @@ class PotModel(QObject):
         self.credits = 0
         self.new_value.emit()
 
+    def update_pot(self):
+        self.new_value.emit()
+
 
 class BetModel(QObject):
     bet_signal = pyqtSignal()
 
     def __init__(self):  # TODO Skall denna klassen behöva ta in gamestate? Nu lägger vi allt längre "ut" i processen
         super().__init__()
-
 
 
 class Player(Hand, QObject):
@@ -56,8 +58,8 @@ class Player(Hand, QObject):
         self.stack += pot
         self.new_stack.emit()
 
-    def bet(self, ammount):
-        self.stack -= ammount
+    def bet(self, amount):
+        self.stack -= amount
         self.new_stack.emit()
 
 
@@ -80,6 +82,7 @@ class PlayerState(QObject):
 
 class GameState(QObject):
     turn_signal = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.deck = StandardDeck()
@@ -88,6 +91,7 @@ class GameState(QObject):
         self.bet_model = BetModel()
         self.game_phase = 0
         self.winning_player = None
+        self.current_call_bet = 0
 
         self.players = PlayerState(self.deck)
 
@@ -128,18 +132,30 @@ class GameState(QObject):
             self.new_round()
 
     def raise_bet(self, amount):
-        print("pinted from raise " + str(amount))
-        self.pot += amount
-        self.new_phase()
+
+        if amount >= self.players.players[self.players.active_player].stack:
+            amount = self.players.players[self.players.active_player].stack
+
+        if amount == 0:
+            self.check_or_call()
+
+        else:
+            self.pot.credits += amount
+            self.players.players[self.players.active_player].bet(amount)
+            self.pot.update_pot()
+            self.new_phase()
 
     def check_or_call(self):
 
         self.players.phase_check += 1
+
+        self.pot.credits += self.current_call_bet
+        self.players.players[self.players.active_player].bet(self.current_call_bet)
+        self.pot.update_pot()
+        self.current_call_bet = 0
+
         if self.players.phase_check == 2:
             self.new_phase()
-        # change stack amount om man callar
-        # change active player
-        pass
 
     def new_round(self):
         self.distribute_pot()
