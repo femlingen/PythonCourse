@@ -32,8 +32,13 @@ class BetView(QGroupBox):
         super().__init__()
         self.model = model
         self.buttons = [QPushButton('Raise'), QPushButton('Call/Check'), QPushButton('Fold')]
+
         self.layout = QVBoxLayout()
-        self.layout.addWidget(QLineEdit('0'))
+
+        self.input = QLineEdit('0')
+        self.layout.addWidget(self.input)
+
+        #self.layout.addWidget(QLineEdit('0'))
         for button in self.buttons:
             self.layout.addWidget(button)
             button.setStyleSheet("QPushButton { background-color: white; border-style: outset; border-width: 2px; "
@@ -43,7 +48,7 @@ class BetView(QGroupBox):
                                  "padding: 6px; }"
                                  "QPushButton:pressed { background-color: green }" )
 
-        self.buttons[0].clicked.connect(self.model.new_phase) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
+        self.buttons[0].clicked.connect(self.raise_amount) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
         self.buttons[1].clicked.connect(self.model.new_phase)  # TODO Som ovan fast till check_or_call
         self.buttons[2].clicked.connect(self.model.fold)  # TODO Som ovan fast med fold (bet_model.fold)
 
@@ -53,6 +58,10 @@ class BetView(QGroupBox):
         self.slider.setValue(0)
 
         self.setLayout(self.layout)
+
+    def raise_amount(self):
+        self.model.raise_bet(int(self.input.text()))
+        self.input.setText('0')
 
 
 class BottomView(QGroupBox):
@@ -99,15 +108,11 @@ class PlayerView(QGroupBox):
         self.player.new_stack.connect(self.update_value)
         self.update_value()
 
-        self.player.turn_signal.connect(self.update_turn)
-        self.update_turn()
-
     def update_value(self):
         self.stack_label.setText('Stack:\n${}'.format(self.player.stack))
 
-    def update_turn(self):
-        self.active_label.setText('Your turn!')
-
+    #def update_turn(self):
+        #self.active_label.setText('Your turn!')
 
 
 class TotalPlayerView(QGroupBox):

@@ -127,9 +127,10 @@ class GameState(QObject):
             self.winning_player = 0
             self.new_round()
 
-    def raise_bet(self, ammount):
-
-        pass
+    def raise_bet(self, amount):
+        print("pinted from raise " + str(amount))
+        self.pot += amount
+        self.new_phase()
 
     def check_or_call(self):
 
@@ -166,9 +167,7 @@ class GameState(QObject):
         elif self.players.active_player == 1:
             self.players.active_player = 0
             self.players.turn_list = [0, 1]
-        turn_signal.emit()
-
-
+        self.turn_signal.emit()
 
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
