@@ -39,6 +39,7 @@ class BetModel(QObject):
 
 class Player(Hand, QObject):
     new_stack = pyqtSignal()
+    new_activity = pyqtSignal()
 
     def __init__(self, name, stack, deck):
         Hand.__init__(self)
@@ -49,6 +50,7 @@ class Player(Hand, QObject):
         self.hand_model = HandModel()
         self.give_new_hand()
         self.current_bet = 0
+        self.is_active = False
 
     def give_new_hand(self):
         self.hand_model.add_card(self.deck.deal_card())
@@ -62,8 +64,10 @@ class Player(Hand, QObject):
         self.stack -= amount
         self.new_stack.emit()
 
-    def check_hand_strength(self, table_cards):
-        return self.best_poker_hand(table_cards)
+    def change_activity(self, activity):
+        self.is_active = activity
+        self.new_activity.emit()
+
 
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
@@ -72,6 +76,7 @@ class Player(Hand, QObject):
 
 class PlayerState(QObject):
     turn_signal = pyqtSignal
+
     def __init__(self, deck):
         self.players = []
         self.players.append(Player('Lucas', 1000, deck))
@@ -101,20 +106,17 @@ class GameState(QObject):
         self.game_phase = 0
         self.winning_player = None
         self.current_call_bet = 0
-
+        self.turn_list = [0, 1]
         self.players = PlayerState(self.deck)
 
     def flopp(self):
         if len(self.table_hand.cards) >= 3:
-            # TODO logic if raising
             return
         for i in range(0, 3):
             self.table_hand.add_card(self.deck.deal_card())
 
     def turn_river(self):
         if len(self.table_hand.cards) >= 5:
-            # TODO logic if turn river?
-
             return
         self.table_hand.add_card(self.deck.deal_card())
 
@@ -131,6 +133,7 @@ class GameState(QObject):
             else:
                 self.new_round()
 
+            self.players.phase_check = 0
             self.players.active_player = 0
         self.players.phase_check = 0
 
@@ -202,12 +205,12 @@ class GameState(QObject):
             self.pot.clear()
 
     def change_active_player(self):
-        if self.players.active_player == 0:
-            self.players.active_player = 1
-            self.players.turn_list = [1, 0]
-        elif self.players.active_player == 1:
-            self.players.active_player = 0
-            self.players.turn_list = [0, 1]
+        if self.active_player == 0:
+            self.active_player = 1
+            self.turn_list = [1, 0]
+        elif self.active_player == 1:
+            self.active_player = 0
+            self.turn_list = [0, 1]
         self.turn_signal.emit()
 
     def winner(self):

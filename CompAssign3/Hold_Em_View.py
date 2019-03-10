@@ -91,10 +91,8 @@ class PlayerView(QGroupBox):
 
         #is_active = True
         #if is_active:  # TODO: change to the variable is active
-         #   active_label = QLabel("Your turn")
-          #  self.v_layout.addWidget(active_label)
-           # self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
 
+        self.v_layout.addWidget(self.active_label)
         self.v_layout.addWidget(self.name_label)
         self.v_layout.addWidget(self.stack_label)
 
@@ -111,11 +109,19 @@ class PlayerView(QGroupBox):
         self.player.new_stack.connect(self.update_value)
         self.update_value()
 
+        self.player.new_activity.connect(self.update_turn)
+        self.update_turn()
+
     def update_value(self):
         self.stack_label.setText('Stack:\n${}'.format(self.player.stack))
 
-    #def update_turn(self):
-        #self.active_label.setText('Your turn!')
+    def update_turn(self):
+        if self.player.is_active is True:
+            self.active_label.setText("Your turn!")
+            self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
+        else:
+            self.active_label.setText("Wait.....")
+            self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
 
 
 class TotalPlayerView(QGroupBox):
@@ -123,10 +129,16 @@ class TotalPlayerView(QGroupBox):
         super().__init__()
         self.model = model
         self.layout = QHBoxLayout()
-        for player in self.model.players:
-            self.layout.addWidget(PlayerView(player))
+        self.player_views = []
+
+        for index, player in enumerate(self.model.players, start = 0):
+            self.player_views.append(PlayerView(player))
+            self.layout.addWidget(self.player_views[index])
+
         self.setStyleSheet("QLabel { padding: 2px; }")
         self.setLayout(self.layout)
+
+    #def update_player_turn(self):
 
 
 class TableCardsView(QGroupBox):
