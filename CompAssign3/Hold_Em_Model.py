@@ -109,8 +109,7 @@ class GameState(QObject):
             return
         self.table_hand.add_card(self.deck.deal_card())
 
-    def new_phase(self):
-
+    def new_phase(self): #TODO när båda har call = true så kallar vi på new phase
         if self.players.phase_check == 1:
             if self.game_phase == 0:
                 self.flopp()
@@ -136,7 +135,9 @@ class GameState(QObject):
             self.new_round()
 
     def raise_bet(self, amount):
-        self.players.phase_check = 0
+        temp_call_bet = amount
+        amount += self.current_call_bet
+        self.current_call_bet = temp_call_bet
         if amount >= self.players.players[self.players.active_player].stack:
             amount = self.players.players[self.players.active_player].stack
 
@@ -144,6 +145,7 @@ class GameState(QObject):
             self.check_or_call()
 
         else:
+            self.players.phase_check = 0
             self.pot.credits += amount
             self.players.players[self.players.active_player].bet(amount)
             self.pot.update_pot()
@@ -160,6 +162,7 @@ class GameState(QObject):
         self.new_phase()
         self.change_active_player()
         self.players.phase_check += 1
+
 
     def new_round(self):
         self.distribute_pot()
