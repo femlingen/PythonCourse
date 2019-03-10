@@ -388,6 +388,7 @@ class PokerHand:
         cnt = Counter()
         for card in cards:
             cnt[card.suit] += 1
+
         if cnt.most_common(1)[0][1] > 4:
             for card1 in reversed(cards):
                 if card1.suit == cnt.most_common(1)[0][0]:

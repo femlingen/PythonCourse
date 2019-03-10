@@ -75,6 +75,14 @@ class PlayerView(QGroupBox):
 
         self.name_label = QLabel(self.player.name)
         self.stack_label = QLabel(str(self.player.stack))
+
+        is_active = True
+
+        if is_active:  # TODO: change to the variable is active
+            active_label = QLabel("Your turn")
+            self.v_layout.addWidget(active_label)
+            self.setStyleSheet(" QWidget { font: bold 24px; background-color: #5AD48F; }")
+
         self.v_layout.addWidget(self.name_label)
         self.v_layout.addWidget(self.stack_label)
 
