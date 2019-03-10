@@ -132,7 +132,8 @@ class CardView(QGraphicsView):
 
     # You can remove these events if you don't need them.
     def mouseDoubleClickEvent(self, event):
-        self.model.flip() # Another possible event. Lets add it to the flip functionality for fun!
+        pass
+        #self.model.flip() # Another possible event. Lets add it to the flip functionality for fun!
 
 
 # A trivial card class (you should use the stuff you made in your library instead!
@@ -191,36 +192,3 @@ class HandModel(Hand, QObject):
             index.append(i)
         super().drop_cards(index)
         self.data_changed.emit()
-
-# a method for restarting the game
-#
-#
-# # Lets test it out
-# st_deck = StandardDeck()
-# st_deck.shuffle_cards()
-# app = QApplication(sys.argv)
-# hand = HandModel()
-# hand.add_card(st_deck.deal_card())
-# hand.add_card(st_deck.deal_card())
-#
-# hand2 = HandModel()
-# hand2.add_card(st_deck.deal_card())
-# hand2.add_card(st_deck.deal_card())
-#
-#
-#
-# # # Creating a small demo window to work with, and put the card_view inside:
-# card_view = CardView(hand)
-# card_view2 = CardView(hand2)
-#
-# box = QVBoxLayout()
-# box.addWidget(card_view)
-# box.addWidget(card_view2)
-#
-# player_view = QGroupBox("Players")
-# player_view.setLayout(box)
-# player_view.show()
-#
-#
-#
-# app.exec_()
