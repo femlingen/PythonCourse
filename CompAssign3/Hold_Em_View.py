@@ -48,8 +48,8 @@ class BetView(QGroupBox):
                                  "padding: 6px; }"
                                  "QPushButton:pressed { background-color: green }" )
 
-        self.buttons[0].clicked.connect(self.raise_amount) # TODO Ändra till bet_model.raise_bet istället för att lägga tiill kort
-        self.buttons[1].clicked.connect(self.model.new_phase)  # TODO Som ovan fast till check_or_call
+        self.buttons[0].clicked.connect(self.raise_amount)
+        self.buttons[1].clicked.connect(self.raise_check_or_call)
         self.buttons[2].clicked.connect(self.model.fold)  # TODO Som ovan fast med fold (bet_model.fold)
 
         self.slider = QSlider(Qt.Horizontal)  # TODO: Remove or add (Depending on time)
@@ -62,6 +62,9 @@ class BetView(QGroupBox):
     def raise_amount(self):
         self.model.raise_bet(int(self.input.text()))
         self.input.setText('0')
+
+    def raise_check_or_call(self):
+        self.model.check_or_call()
 
 
 class BottomView(QGroupBox):

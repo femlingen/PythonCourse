@@ -109,17 +109,21 @@ class GameState(QObject):
             return
         self.table_hand.add_card(self.deck.deal_card())
 
-    def new_phase(self): #TODO när båda har call = true så kallar vi på new phase
-        if self.game_phase == 0:
-            self.flopp()
-            self.game_phase += 1
+    def new_phase(self):
 
-        elif self.game_phase == 1 or self.game_phase == 2:
-            self.turn_river()
-            self.game_phase += 1
+        if self.players.phase_check == 1:
+            if self.game_phase == 0:
+                self.flopp()
+                self.game_phase += 1
 
-        else:
-            self.new_round()
+            elif self.game_phase == 1 or self.game_phase == 2:
+                self.turn_river()
+                self.game_phase += 1
+
+            else:
+                self.new_round()
+
+            self.players.phase_check = 0
 
     def fold(self):
 
@@ -132,7 +136,7 @@ class GameState(QObject):
             self.new_round()
 
     def raise_bet(self, amount):
-
+        self.players.phase_check = 0
         if amount >= self.players.players[self.players.active_player].stack:
             amount = self.players.players[self.players.active_player].stack
 
@@ -144,18 +148,18 @@ class GameState(QObject):
             self.players.players[self.players.active_player].bet(amount)
             self.pot.update_pot()
             self.new_phase()
+        self.change_active_player()
 
     def check_or_call(self):
-
-        self.players.phase_check += 1
 
         self.pot.credits += self.current_call_bet
         self.players.players[self.players.active_player].bet(self.current_call_bet)
         self.pot.update_pot()
         self.current_call_bet = 0
 
-        if self.players.phase_check == 2:
-            self.new_phase()
+        self.new_phase()
+        self.change_active_player()
+        self.players.phase_check += 1
 
     def new_round(self):
         self.distribute_pot()
