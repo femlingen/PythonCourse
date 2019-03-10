@@ -65,7 +65,7 @@ class Player(Hand, QObject):
         self.new_stack.emit()
 
     def check_hand_strength(self, table_cards):
-        return self.best_poker_hand(table_cards)
+        return self.hand_model.best_poker_hand(table_cards)
 
     def change_activity(self, activity):
         self.is_active = activity
@@ -205,7 +205,7 @@ class GameState(QObject):
             self.players.players[1].update_stack(self.pot.credits/2)
             self.pot.clear()
         else:
-            self.players.players[self.winning_player].update_stack(self.pot.credits/2)
+            self.players.players[self.winning_player].update_stack(self.pot.credits)
             self.pot.clear()
 
     def change_active_player(self, i=1):
