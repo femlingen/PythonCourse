@@ -62,7 +62,8 @@ class Player(Hand, QObject):
         self.stack -= amount
         self.new_stack.emit()
 
-
+    def check_hand_strength(self, table_cards):
+        return self.best_poker_hand(table_cards)
 
 # The QWidget class is the base class of all user interface objects.
 # The widget is the atom of the user interface: it receives mouse, keyboard and
@@ -78,6 +79,14 @@ class PlayerState(QObject):
         self.active_player = 0
         self.phase_check = 0
         self.turn_list = [0, 1]
+
+    def check_winners(self, table_cards):
+        if self.players[0].check_hand_strength() < self.players[1].check_hand_strength():
+            return 0
+        elif self.players[0].check_hand_strength() > self.players[1].check_hand_strength():
+            return 1
+        elif self.players[0].check_hand_strength() == self.players[1].check_hand_strength():
+            return 2
 
 
 class GameState(QObject):
@@ -109,7 +118,7 @@ class GameState(QObject):
             return
         self.table_hand.add_card(self.deck.deal_card())
 
-    def new_phase(self): #TODO när båda har call = true så kallar vi på new phase
+    def new_phase(self):
         if self.players.phase_check == 1:
             if self.game_phase == 0:
                 self.flopp()
@@ -122,8 +131,8 @@ class GameState(QObject):
             else:
                 self.new_round()
 
-            self.players.phase_check = 0
             self.players.active_player = 0
+        self.players.phase_check = 0
 
     def fold(self):
 
@@ -164,7 +173,7 @@ class GameState(QObject):
 
         self.new_phase()
         self.change_active_player()
-        self.players.phase_check += 1
+        self.players.phase_check = 1
 
 
     def new_round(self):
@@ -172,6 +181,7 @@ class GameState(QObject):
         self.deck = StandardDeck()
         self.table_hand.drop_all_cards()
         self.game_phase = 0
+        self.players.phase_check = 0
 
         for player in self.players.players:
             player.deck = self.deck
@@ -183,8 +193,13 @@ class GameState(QObject):
         msg.exec_()
 
     def distribute_pot(self):
-        self.players.players[self.winning_player].update_stack(self.pot.credits)
-        self.pot.clear()
+        if self.winner() == 2:
+            self.players.players[0].update_stack(self.pot.credits/2)
+            self.players.players[1].update_stack(self.pot.credits/2)
+            self.pot.clear()
+        else:
+            self.players.players[self.winning_player].update_stack(self.pot.credits/2)
+            self.pot.clear()
 
     def change_active_player(self):
         if self.players.active_player == 0:
@@ -195,6 +210,8 @@ class GameState(QObject):
             self.players.turn_list = [0, 1]
         self.turn_signal.emit()
 
+    def winner(self):
+        self.winning_player = self.players.check_winners(self.table_hand.cards)
 # metod  playmessage (str)
 # messagebox som målar upp messagebox
 # lyssnar på gamemessage-signal som initieras av metamodellen
