@@ -30,7 +30,7 @@ class PlayingCard:
         return self.get_value() < other.get_value()
 
     def __eq__(self, other):
-        return self.get_value() == other.get_value() and self.suit == other.suit # TODO fixa kompl
+        return self.get_value() == other.get_value() and self.suit == other.suit
 
     def __gt__(self, other):
         return self.get_value() > other.get_value()
@@ -258,10 +258,13 @@ class PokerType(Enum):
     high_card = 0
 
     def __lt__(self, other):
-        return self.value < other.value # TODO fixa kompl
+        if self.value == other.value:
+            return self.high_card < other.high_card
+        else:
+            return self.value < other.value
 
     def __eq__(self, other):
-        return self.value == other.value # TODO fixa kompl
+        return self.value == other.value
 
 
 """ Task 4 The poker hand  (for a lack of a better name): A  PokerHand  should contain a hand object 
@@ -291,7 +294,10 @@ class PokerHand:
                 self.hand_type = htype
                 break
 
-    def __lt__(self, other): # TODO fixa kompl
+    def __lt__(self, other):  # TODO fixa kompl
+        if self.hand_type.value == other.hand_type.value:
+            return self.high_card.get_value() < other.high_card.get_value()
+        else:
             return self.hand_type.value < other.hand_type.value
 
     def __eq__(self, other):
@@ -352,7 +358,7 @@ class PokerHand:
         threes.sort()
 
         if len(threes) > 0:
-            return threes[0] # maybe not the right way of returning the value
+            return threes[0]  # maybe not the right way of returning the value
 
     @staticmethod
     def check_straight(cards):

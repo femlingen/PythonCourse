@@ -106,7 +106,12 @@ class PlayerView(QGroupBox):
 
         self.layout = QHBoxLayout()
         self.layout.addLayout(self.v_layout)
-        self.layout.addWidget(CardView(self.player.hand_model))
+        self.player_view = CardView(self.player.hand_model)
+        self.player_view.setMinimumWidth(370)
+        self.player_view.setMinimumHeight(250)
+        self.player_view.setMaximumHeight(370)
+        self.player_view.setMaximumHeight(250)
+        self.layout.addWidget(self.player_view)
 
         self.setStyleSheet(" CardView { min-width: 14em; max-width: 20em; max-height: 12em; }")
         self.setLayout(self.layout)
